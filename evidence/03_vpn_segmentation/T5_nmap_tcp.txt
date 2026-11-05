@@ -1,0 +1,12 @@
+$ docker run --rm --network vaurora_wan_fiber --ip 172.30.0.67 --cap-add NET_RAW --entrypoint sh vaurora/attacker:1.0 -c nmap -Pn -sT -p- --max-retries 0 --min-rate 3000 172.30.0.2
+[exit 0]
+Starting Nmap 7.93 ( https://nmap.org ) at 2026-11-05 19:33 UTC
+Warning: 172.30.0.2 giving up on port because retransmission cap hit (0).
+Nmap scan report for vaurora-hub-1.vaurora_wan_fiber (172.30.0.2)
+Host is up.
+All 65535 scanned ports on vaurora-hub-1.vaurora_wan_fiber (172.30.0.2) are in ignored states.
+Not shown: 65535 filtered tcp ports (no-response)
+
+Nmap done: 1 IP address (1 host up) scanned in 65.26 seconds
+
+

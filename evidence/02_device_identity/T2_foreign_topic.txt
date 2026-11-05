@@ -1,0 +1,10 @@
+$ docker run --rm --network vaurora_iot_ubs --ip 10.10.3.12 -v <repo>/secrets/public:/p:ro -v <repo>/secrets/devices/ubs:/d:ro --entrypoint sh vaurora/attacker:1.0 -c mosquitto_pub -h 10.10.3.2 -p 8883 --cafile /p/ca-chain.crt --tls-version tlsv1.3 -V mqttv5 -q 1 -d --cert /d/ubs-lock-01.crt --key /d/ubs-lock-01.key -i t2-probe -t vilaaurora/ubs/ubs-coldchamber-01/telemetry -m spoof
+[exit 0]
+Client t2-probe sending CONNECT
+Client t2-probe received CONNACK (0)
+Client t2-probe sending PUBLISH (d0, q1, r0, m1, 'vilaaurora/ubs/ubs-coldchamber-01/telemetry', ... (5 bytes))
+Client t2-probe received PUBACK (Mid: 1, RC:135)
+Client t2-probe sending DISCONNECT
+
+Warning: Publish 1 failed: Not authorized.
+

@@ -1,0 +1,28 @@
+{
+  "evidence": "EV-01",
+  "bytes": 82669568,
+  "method": "byte pattern search over one process's readable memory",
+  "not_performed": "Volatility 3 (requires a full RAM image)",
+  "findings": {
+    "stacked_update_on_pump_schedule": {
+      "count": 4,
+      "sample": "UPDATE agendamento_bomba SET ligada=true WHERE espaco='escola'; --%'"
+    },
+    "union_on_users_table": {
+      "count": 0,
+      "sample": null
+    },
+    "sqlmap_user_agent": {
+      "count": 3,
+      "sample": "sqlmap/1.8.11#pip (https://s"
+    },
+    "attacker_tunnel_source": {
+      "count": 19,
+      "sample": "172.28.0.2"
+    },
+    "concatenated_query_template": {
+      "count": 12,
+      "sample": "SELECT data, local, cracha FROM acessos WHERE local LIKE '%{term}%'\""
+    }
+  }
+}

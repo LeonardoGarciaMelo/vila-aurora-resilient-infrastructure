@@ -1,0 +1,4 @@
+$ docker run --rm --network vaurora_iot_ubs --ip 10.10.3.13 -v <repo>/secrets/public:/p:ro -v <repo>/secrets/devices/ubs:/d:ro --entrypoint sh vaurora/attacker:1.0 -c mosquitto_pub -h 10.10.3.2 -p 8883 --cafile /p/ca-chain.crt --tls-version tlsv1.3 -q 1 --cert /d/ubs-testrevoke-1793907206.crt --key /d/ubs-testrevoke-1793907206.key -t vilaaurora/ubs/ubs-testrevoke-1793907206/telemetry -m '{}'
+[exit 0]
+
+

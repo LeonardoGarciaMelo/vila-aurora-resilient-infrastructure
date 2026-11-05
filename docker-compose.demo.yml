@@ -1,0 +1,20 @@
+# Local viewing only: publishes UIs on 127.0.0.1 for the demo video. Never use it to measure exposure:
+# T5 tests the hub, and the base compose file publishes nothing.
+services:
+  waf:
+    networks:
+      demo: {}
+      cloud: { ipv4_address: 10.60.0.20 }
+    ports: ["127.0.0.1:8443:8443"]
+  mailpit:
+    networks:
+      demo: {}
+      phishing: { ipv4_address: 172.26.0.25 }
+    ports: ["127.0.0.1:8025:8025"]
+  gophish:
+    networks:
+      demo: {}
+      phishing: { ipv4_address: 172.26.0.10 }
+    ports: ["127.0.0.1:3333:3333"]
+networks:
+  demo: {}

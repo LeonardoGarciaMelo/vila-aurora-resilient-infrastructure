@@ -1,0 +1,41 @@
+$ pki/pki.sh list
+[exit 0]
+V serial=1000 /CN=edge-centro/O=Vila Aurora Lab
+V serial=1001 /CN=centro-edge-01/O=Vila Aurora Lab
+V serial=1002 /CN=centro-energy-01/O=Vila Aurora Lab
+V serial=1003 /CN=centro-lock-01/O=Vila Aurora Lab
+V serial=1004 /CN=edge-escola/O=Vila Aurora Lab
+V serial=1005 /CN=escola-edge-01/O=Vila Aurora Lab
+V serial=1006 /CN=escola-level-01/O=Vila Aurora Lab
+V serial=1007 /CN=escola-pump-01/O=Vila Aurora Lab
+V serial=1008 /CN=escola-quality-01/O=Vila Aurora Lab
+V serial=1009 /CN=edge-ubs/O=Vila Aurora Lab
+V serial=100A /CN=ubs-edge-01/O=Vila Aurora Lab
+V serial=100B /CN=ubs-coldchamber-01/O=Vila Aurora Lab
+V serial=100C /CN=ubs-lock-01/O=Vila Aurora Lab
+V serial=100D /CN=edge-horta/O=Vila Aurora Lab
+V serial=100E /CN=horta-edge-01/O=Vila Aurora Lab
+V serial=100F /CN=horta-energy-01/O=Vila Aurora Lab
+V serial=1010 /CN=horta-level-01/O=Vila Aurora Lab
+V serial=1011 /CN=edge-abrigo/O=Vila Aurora Lab
+V serial=1012 /CN=abrigo-edge-01/O=Vila Aurora Lab
+V serial=1013 /CN=abrigo-flood-01/O=Vila Aurora Lab
+V serial=1014 /CN=abrigo-generator-01/O=Vila Aurora Lab
+V serial=1015 /CN=abrigo-air-01/O=Vila Aurora Lab
+V serial=1016 /CN=cloud-broker/O=Vila Aurora Lab
+V serial=1017 /CN=ingest-01/O=Vila Aurora Lab
+V serial=1018 /CN=panel-01/O=Vila Aurora Lab
+V serial=1019 /CN=painel.vilaaurora.example/O=Vila Aurora Lab
+V serial=101A /CN=soar-01/O=Vila Aurora Lab
+V serial=101B /CN=edge-centro/O=Vila Aurora Lab
+V serial=101C /CN=edge-escola/O=Vila Aurora Lab
+V serial=101D /CN=edge-ubs/O=Vila Aurora Lab
+V serial=101E /CN=edge-horta/O=Vila Aurora Lab
+V serial=101F /CN=edge-abrigo/O=Vila Aurora Lab
+V serial=1020 /CN=ubs-testrevoke-01/O=Vila Aurora Lab
+R serial=1021 /CN=ubs-testrevoke-1793902335/O=Vila Aurora Lab
+R serial=1022 /CN=ubs-testrevoke-1793903296/O=Vila Aurora Lab
+R serial=1023 /CN=ubs-testrevoke-1793904171/O=Vila Aurora Lab
+R serial=1024 /CN=ubs-testrevoke-1793907206/O=Vila Aurora Lab
+
+

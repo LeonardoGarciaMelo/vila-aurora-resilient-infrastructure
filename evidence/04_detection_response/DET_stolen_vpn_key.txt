@@ -1,0 +1,8 @@
+$ docker run --rm --network vaurora_wan_fiber --ip 172.30.0.66 --cap-add NET_ADMIN -v <repo>/secrets/operator:/k:ro --entrypoint sh vaurora/attacker:1.0 -c ip link add wg0 type wireguard && wg set wg0 private-key /k/wg.key peer RppoJ0lwg9n41Z6Ve/jvsCbX59uXyWleRY1o3+OGbzk= endpoint 172.30.0.2:51820 allowed-ips 10.70.0.1/32 && ip addr add 10.70.0.10/24 dev wg0 && ip link set wg0 up && (echo probe | nc -u -w 2 10.70.0.1 9; sleep 8); wg show wg0 | tail -4
+[exit 0]
+  endpoint: 172.30.0.2:51820
+  allowed ips: 10.70.0.1/32
+  latest handshake: 10 seconds ago
+  transfer: 92 B received, 228 B sent
+
+

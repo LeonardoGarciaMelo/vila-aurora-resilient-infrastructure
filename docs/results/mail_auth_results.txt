@@ -1,0 +1,15 @@
+# RT-10 mail authentication run, 2026-11-05T16:28:36-03:00
+$ dig +short TXT vilaaurora.example
+"v=spf1 ip4:172.27.0.10 -all"
+$ dig +short TXT mail._domainkey.vilaaurora.example
+"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApri7lCkogAa5ijhCwQ6JTH524KCGy20nI57cOQHWaiia33jIUFOs229h8pYXp3S1cMt5ouXDUOjXL
+$ dig +short TXT _dmarc.vilaaurora.example
+"v=DMARC1; p=quarantine; pct=100; adkim=s; aspf=s; rua=mailto:dmarc@vilaaurora.example"
+legit: delivered to lab MTA
+forged: delivered to lab MTA
+--- verdicts recorded by the receiving MTA
+Nov  5 16:28:39 mail-receiver vilaaurora-mail: from=vilaaurora.example peer=172.27.0.10 folder=inbox lab-mx; spf=pass smtp.mailfrom=avisos@vilaaurora.example; dkim=pass header.d=vilaaurora.example; dmarc=pass (p=quarantine) header.from=vilaaurora.example
+Nov  5 16:28:40 mail-receiver vilaaurora-mail: from=vilaaurora.example peer=172.27.0.66 folder=quarantine lab-mx; spf=fail smtp.mailfrom=avisos@vilaaurora.example; dkim=fail header.d=none; dmarc=fail (p=quarantine) header.from=vilaaurora.example
+--- mailbox folders
+./inbox/1793906919546.eml
+./quarantine/1793906920351.eml

@@ -1,0 +1,175 @@
+{
+  "facts": {
+    "vpn_central_lines": 9,
+    "vpn_local_lines_after_tampering": 3,
+    "panel_requests_total": 119,
+    "panel_requests_with_sqli_pattern": 109,
+    "database_statements_touching_usuarios": 1,
+    "database_schedule_updates": 1,
+    "tank_start_pct": 80.0,
+    "tank_end_pct": 0.0,
+    "cold_chamber_unalerted_samples": 7,
+    "records_extracted_by_attacker": 40,
+    "siem_alerts_for_chain": 77
+  },
+  "events": [
+    {
+      "time": "2026-11-05 16:29:06",
+      "source": "EV-03",
+      "event": "VPN login with password only, user coordenadora, source 172.29.0.66",
+      "attack": "T1133, T1078"
+    },
+    {
+      "time": "2026-11-05 16:29:10",
+      "source": "EV-04",
+      "event": "First SQL Injection payload on /history (109 suspicious requests in total)",
+      "attack": "T1190"
+    },
+    {
+      "time": "2026-11-05 16:29:10.772000",
+      "source": "EV-07",
+      "event": "First SIEM alert for the chain: rule 100111 (77 alerts in total)",
+      "attack": "-"
+    },
+    {
+      "time": "2026-11-05 16:29:42",
+      "source": "EV-04",
+      "event": "Last SQL Injection payload on /history",
+      "attack": "T1190"
+    },
+    {
+      "time": "2026-11-05 16:29:42",
+      "source": "EV-05",
+      "event": "UNION extraction from table usuarios (1 statements)",
+      "attack": "T1213"
+    },
+    {
+      "time": "2026-11-05 16:29:42",
+      "source": "EV-05",
+      "event": "UPDATE on agendamento_bomba through stacked query",
+      "attack": "T0836"
+    },
+    {
+      "time": "2026-11-05 16:29:46",
+      "source": "EV-06",
+      "event": "Pump turned on by database schedule, no validation; tank level starts falling",
+      "attack": "T0831"
+    },
+    {
+      "time": "2026-11-05 16:32:07",
+      "source": "EV-06",
+      "event": "Fiber down: controller loses cloud alerts, no local alarm exists",
+      "attack": "-"
+    },
+    {
+      "time": "2026-11-05 16:32:37",
+      "source": "EV-06",
+      "event": "Cold chamber above 8 C with no alert to anyone",
+      "attack": "-"
+    },
+    {
+      "time": "2026-11-05 16:32:42",
+      "source": "attacker ground truth",
+      "event": "Local VPN log truncated; central mirror keeps the records",
+      "attack": "T1070"
+    },
+    {
+      "time": "2026-11-05 16:33:07",
+      "source": "EV-06",
+      "event": "School tank reaches 0%",
+      "attack": "T0831"
+    }
+  ],
+  "integrity": [
+    "images/EV-01_panel_process_memory.raw: SUCESSO",
+    "images/EV-02_panel_filesystem.tar: SUCESSO",
+    "images/EV-03_vpn_logs.tar: SUCESSO",
+    "images/EV-04_panel_logs.tar: SUCESSO",
+    "images/EV-05_postgres_logs.tar: SUCESSO",
+    "images/EV-06_controller_logs.tar: SUCESSO",
+    "images/EV-07_wazuh_alerts.json: SUCESSO",
+    "images/EV-08_phishing_message.eml: SUCESSO"
+  ],
+  "hashes": [
+    {
+      "id": "EV-01",
+      "description": "Process memory of panel v1 (scope limited, see module docstring)",
+      "file": "EV-01_panel_process_memory.raw",
+      "tool": "/proc/pid/mem reader",
+      "bytes": 82669568,
+      "sha256": "6758961eb6a74c2d24e9d65199b248d9f0d223a87bc96c62dcf8149ee7817e67",
+      "collected_at": "2026-11-05T16:33:04-03:00",
+      "examiner": "Equipe do laboratorio"
+    },
+    {
+      "id": "EV-02",
+      "description": "Filesystem export of panel v1 container",
+      "file": "EV-02_panel_filesystem.tar",
+      "tool": "docker export",
+      "bytes": 170958336,
+      "sha256": "db3bcff0b2779262e7c75050603386e058083e278281e8937475c4c9c5125fc5",
+      "collected_at": "2026-11-05T16:33:07-03:00",
+      "examiner": "Equipe do laboratorio"
+    },
+    {
+      "id": "EV-03",
+      "description": "Legacy VPN authentication logs: local (tampered) and central mirror",
+      "file": "EV-03_vpn_logs.tar",
+      "tool": "docker cp + tar",
+      "bytes": 10240,
+      "sha256": "54708aa1a228df7a295173bb058e7995ecd840993d5c8d1933b8261450cbc63a",
+      "collected_at": "2026-11-05T16:33:08-03:00",
+      "examiner": "Equipe do laboratorio"
+    },
+    {
+      "id": "EV-04",
+      "description": "Panel v1 access and application logs",
+      "file": "EV-04_panel_logs.tar",
+      "tool": "docker cp + tar",
+      "bytes": 102400,
+      "sha256": "21d1575911f44395399fea58c7ef1b8cc35fab0470ed81051613884f81726e17",
+      "collected_at": "2026-11-05T16:33:08-03:00",
+      "examiner": "Equipe do laboratorio"
+    },
+    {
+      "id": "EV-05",
+      "description": "Legacy PostgreSQL statement log",
+      "file": "EV-05_postgres_logs.tar",
+      "tool": "docker cp + tar",
+      "bytes": 256000,
+      "sha256": "ea34e8ae36c883509bacdb1278539fd4e545c9c3d546fce13ce396e8485b7280",
+      "collected_at": "2026-11-05T16:33:08-03:00",
+      "examiner": "Equipe do laboratorio"
+    },
+    {
+      "id": "EV-06",
+      "description": "Field controller log (pump, tank, cold chamber)",
+      "file": "EV-06_controller_logs.tar",
+      "tool": "docker cp + tar",
+      "bytes": 10240,
+      "sha256": "2220a12439defe4b53534e0eceb42a62ce760c72d46512b89ae2c6ace9c0f89c",
+      "collected_at": "2026-11-05T16:33:08-03:00",
+      "examiner": "Equipe do laboratorio"
+    },
+    {
+      "id": "EV-07",
+      "description": "Wazuh alert export",
+      "file": "EV-07_wazuh_alerts.json",
+      "tool": "alerts.json export",
+      "bytes": 126110,
+      "sha256": "990a17cc5755f3588630b5ffbaac5af2642944a3614c122b57e3e96c60ed3dc8",
+      "collected_at": "2026-11-05T16:33:09-03:00",
+      "examiner": "Equipe do laboratorio"
+    },
+    {
+      "id": "EV-08",
+      "description": "Forged e-mail with Authentication-Results headers",
+      "file": "EV-08_phishing_message.eml",
+      "tool": "lab MTA quarantine copy",
+      "bytes": 442,
+      "sha256": "bdf29e5b5df838551b45c59f3aa31c4ccf99edb294af88e27ebc55f0cec83cef",
+      "collected_at": "2026-11-05T16:33:09-03:00",
+      "examiner": "Equipe do laboratorio"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Painel{% endblock %} - Rede Vila Aurora</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+  <header>
+    <h1>Rede Comunitária Vila Aurora</h1>
+    {% if session.user %}
+    <nav aria-label="Menu principal">
+      <ul>
+        <li><a href="{{ url_for('dashboard') }}">Espaços</a></li>
+        <li><a href="{{ url_for('alerts') }}">Avisos</a></li>
+        {% if session.role in ('technician', 'coordination') %}<li><a href="{{ url_for('commands') }}">Comandos</a></li>{% endif %}
+        {% if session.role in ('coordination', 'auditor') %}
+        <li><a href="{{ url_for('history') }}">Histórico de acessos</a></li>
+        <li><a href="{{ url_for('audit_view') }}">Auditoria</a></li>
+        {% endif %}
+        {% if session.role == 'coordination' %}<li><a href="{{ url_for('users') }}">Pessoas</a></li>{% endif %}
+        <li>{{ session.user }} ({{ role_labels[session.role] }})</li>
+        <li><form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="link">Sair</button></form></li>
+      </ul>
+    </nav>
+    {% endif %}
+  </header>
+  <main id="conteudo">
+    {% for message in get_flashed_messages() %}<p class="flash" role="status">{{ message }}</p>{% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

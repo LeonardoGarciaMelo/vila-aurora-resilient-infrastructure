@@ -1,0 +1,28 @@
+user ingest-01
+topic read vilaaurora/+/uplink
+
+user panel-01
+topic write vilaaurora/+/command/#
+
+user soar-01
+topic write vilaaurora/+/command/soar
+
+user centro-edge-01
+topic write vilaaurora/centro/uplink
+topic read vilaaurora/centro/command/#
+
+user escola-edge-01
+topic write vilaaurora/escola/uplink
+topic read vilaaurora/escola/command/#
+
+user ubs-edge-01
+topic write vilaaurora/ubs/uplink
+topic read vilaaurora/ubs/command/#
+
+user horta-edge-01
+topic write vilaaurora/horta/uplink
+topic read vilaaurora/horta/command/#
+
+user abrigo-edge-01
+topic write vilaaurora/abrigo/uplink
+topic read vilaaurora/abrigo/command/#

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Comandos{% endblock %}
+{% block content %}
+<h2>Enviar comando</h2>
+<p>Desligar a bomba, desligar o gerador ou abrir todas as portas só acontece depois da aprovação de outra pessoa da coordenação.</p>
+<form class="box" method="post">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label for="site">Espaço</label>
+  <select id="site" name="site">
+    <option value="escola">Escola Municipal</option><option value="abrigo">Abrigo de Emergência</option>
+    <option value="ubs">UBS</option><option value="centro">Centro Comunitário</option><option value="horta">Horta e Cozinha</option>
+  </select>
+  <label for="actuator">Equipamento</label>
+  <select id="actuator" name="actuator"><option value="pump">Bomba</option><option value="generator">Gerador</option><option value="lock">Fechadura</option></select>
+  <label for="action">Ação</label>
+  <select id="action" name="action"><option value="on">Ligar</option><option value="off">Desligar</option><option value="open">Abrir uma porta</option><option value="open_all">Abrir todas as portas</option></select>
+  <button>Enviar</button>
+</form>
+<h2>Aguardando aprovação</h2>
+{% if not pending %}<p>Nenhum pedido aguardando.</p>{% endif %}
+{% for p in pending %}
+<div class="card">
+  <p>{{ p.requested_by }} pediu: <strong>{{ p.actuator }} / {{ p.action }}</strong> em {{ p.site }} ({{ p.requested_at.strftime('%d/%m %H:%M') }})</p>
+  {% if session.role == 'coordination' %}
+  <form method="post" action="{{ url_for('decide_command', action_id=p.id, decision='approve') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Aprovar pedido {{ p.id }}</button></form>
+  <form method="post" action="{{ url_for('decide_command', action_id=p.id, decision='reject') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Recusar pedido {{ p.id }}</button></form>
+  {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

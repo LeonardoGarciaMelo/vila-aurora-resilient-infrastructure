@@ -1,0 +1,5 @@
+vilaaurora.example:53 {
+    file /dns/vilaaurora.example.zone
+    log
+    errors
+}

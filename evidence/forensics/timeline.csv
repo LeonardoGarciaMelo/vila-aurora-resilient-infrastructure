@@ -1,0 +1,12 @@
+time,source,event,attack
+2026-11-05 16:29:06,EV-03,"VPN login with password only, user coordenadora, source 172.29.0.66","T1133, T1078"
+2026-11-05 16:29:10,EV-04,First SQL Injection payload on /history (109 suspicious requests in total),T1190
+2026-11-05 16:29:10.772000,EV-07,First SIEM alert for the chain: rule 100111 (77 alerts in total),-
+2026-11-05 16:29:42,EV-04,Last SQL Injection payload on /history,T1190
+2026-11-05 16:29:42,EV-05,UNION extraction from table usuarios (1 statements),T1213
+2026-11-05 16:29:42,EV-05,UPDATE on agendamento_bomba through stacked query,T0836
+2026-11-05 16:29:46,EV-06,"Pump turned on by database schedule, no validation; tank level starts falling",T0831
+2026-11-05 16:32:07,EV-06,"Fiber down: controller loses cloud alerts, no local alarm exists",-
+2026-11-05 16:32:37,EV-06,Cold chamber above 8 C with no alert to anyone,-
+2026-11-05 16:32:42,attacker ground truth,Local VPN log truncated; central mirror keeps the records,T1070
+2026-11-05 16:33:07,EV-06,School tank reaches 0%,T0831

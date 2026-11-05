@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Histórico de acessos{% endblock %}
+{% block content %}
+<h2>Histórico de acessos</h2>
+<form class="box" method="get" role="search">
+  <label for="q">Buscar por local</label>
+  <input id="q" name="q" value="{{ term }}" maxlength="40">
+  <button>Buscar</button>
+</form>
+<p>O crachá aparece como um código para proteger a privacidade das pessoas.</p>
+<div class="table-wrap"><table>
+  <caption>Últimos {{ rows|length }} acessos encontrados</caption>
+  <thead><tr><th scope="col">Quando</th><th scope="col">Local</th><th scope="col">Crachá (código)</th><th scope="col">Resultado</th></tr></thead>
+  <tbody>{% for r in rows %}<tr><td>{{ r.happened_at.strftime('%d/%m/%Y %H:%M') }}</td><td>{{ r.location }}</td><td class="hash">{{ r.badge_hash[:16] }}</td><td>{{ r.result }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

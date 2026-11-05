@@ -1,0 +1,623 @@
+# Vila Aurora resilient infrastructure lab. All networks are internal: nothing reaches the internet
+# and no port is published on the host (see docker-compose.demo.yml for the local browser view).
+name: vaurora
+
+# Only one service per image declares `build`, so `compose build` does not race on the same tag.
+x-edge: &edge
+  image: vaurora/edge:1.0
+  pull_policy: never
+  restart: unless-stopped
+  cap_add: [NET_ADMIN]
+  sysctls: { net.ipv4.ip_forward: "1" }
+  depends_on: [hub]
+
+x-field: &field
+  image: vaurora/field-sim:1.0
+  pull_policy: never
+  restart: unless-stopped
+
+x-edge-env: &edge-env
+  TZ: ${TZ}
+  FAILBACK_SECONDS: ${FAILBACK_SECONDS:-900}
+  HUB_FIBER_IP: 172.30.0.2
+  COLD_ALARM_SECONDS: ${COLD_ALARM_SECONDS}
+
+services:
+  # ─── External segments / VPN ───
+  hub:
+    build: { context: ./services, dockerfile: hub/Dockerfile }
+    image: vaurora/hub:1.0
+    restart: unless-stopped
+    cap_add: [NET_ADMIN]
+    sysctls: { net.ipv4.ip_forward: "1" }
+    environment:
+      TZ: ${TZ}
+      LOG_HOST: hub
+      VPN_BUSINESS_HOURS: ${VPN_BUSINESS_HOURS}
+      ZTNA_OPERATOR_TOTP: ${ZTNA_OPERATOR_TOTP}
+      HUB_API_TOKEN: ${HUB_API_TOKEN}
+    volumes:
+      - ./secrets/hub:/secrets/hub:ro
+      - cloud_logs:/var/log/vaurora
+    networks:
+      wan_fiber: { ipv4_address: 172.30.0.2 }
+      wan_4g: { ipv4_address: 172.31.0.2 }
+      cloud: { ipv4_address: 10.60.0.1 }
+
+  sms-gw:
+    build: { context: ./services, dockerfile: sms-gw/Dockerfile }
+    image: vaurora/sms-gw:1.0
+    restart: unless-stopped
+    environment: { TZ: "${TZ}", LOG_HOST: sms-gw }
+    volumes: [cloud_logs:/var/log/vaurora]
+    networks:
+      wan_4g: { ipv4_address: 172.31.0.50 }
+
+  # ─── Cloud ───
+  db:
+    image: postgres:16.4-alpine
+    restart: unless-stopped
+    # The shared log volume starts root-owned; hand it to postgres before the server opens it.
+    entrypoint: [sh, -c, 'chown postgres:postgres /var/log/pg && exec docker-entrypoint.sh "$$@"', --]
+    command:
+      - postgres
+      - -c
+      - log_connections=on
+      - -c
+      - log_statement=mod
+      - -c
+      - log_line_prefix=%m %u@%d %h
+      - -c
+      - logging_collector=on
+      - -c
+      - log_directory=/var/log/pg
+      - -c
+      - log_filename=postgresql.log
+      - -c
+      - log_file_mode=0644
+    environment:
+      TZ: ${TZ}
+      POSTGRES_DB: vaurora
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      INGEST_DB_PASSWORD: ${INGEST_DB_PASSWORD}
+      PANEL_DB_PASSWORD: ${PANEL_DB_PASSWORD}
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD}
+      AI_DB_PASSWORD: ${AI_DB_PASSWORD}
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - db_data:/var/lib/postgresql/data
+      - pg_logs:/var/log/pg
+    networks:
+      cloud: { ipv4_address: 10.60.0.10 }
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres -d vaurora]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  cloud-broker:
+    image: eclipse-mosquitto:2.0.20
+    restart: unless-stopped
+    environment: { TZ: "${TZ}" }
+    volumes:
+      - ./services/cloud-broker:/mosquitto/config:ro
+      - ./secrets/public:/secrets/public:ro
+      - ./secrets/cloud/broker:/secrets/broker:ro
+      - broker_data:/mosquitto/data
+      - cloud_logs:/var/log/vaurora
+    networks:
+      cloud: { ipv4_address: 10.60.0.30 }
+
+  cloud-broker-routes:
+    image: vaurora/hub:1.0
+    pull_policy: never
+    network_mode: service:cloud-broker
+    cap_add: [NET_ADMIN]
+    entrypoint: [sh, /route.sh]
+    volumes: [./services/net-init/route.sh:/route.sh:ro]
+    depends_on: [cloud-broker, hub]
+
+  ingest:
+    build: { context: ./services, dockerfile: ingest/Dockerfile }
+    image: vaurora/ingest:1.0
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      LOG_HOST: ingest
+      INGEST_DB_PASSWORD: ${INGEST_DB_PASSWORD}
+    volumes:
+      - ./secrets/public:/secrets/public:ro
+      - ./secrets/cloud/ingest:/secrets/client:ro
+      - cloud_logs:/var/log/vaurora
+    networks:
+      cloud: { ipv4_address: 10.60.0.31 }
+    depends_on:
+      db: { condition: service_healthy }
+      cloud-broker: { condition: service_started }
+
+  # ─── Edge + field, one pair per community space ───
+  edge-centro:
+    <<: *edge
+    build: { context: ./services, dockerfile: edge/Dockerfile }
+    hostname: edge-centro
+    environment: { <<: *edge-env, SPACE: centro, SITE_ID: "1", EDGE_IP: 10.10.1.2, WG_IP: 10.50.0.11, LOG_HOST: edge-centro }
+    volumes:
+      - ./secrets/edges/centro:/secrets/edge:ro
+      - ./secrets/public:/secrets/public:ro
+      - edge_centro:/var/lib/vaurora
+    networks:
+      iot_centro: { ipv4_address: 10.10.1.2 }
+      wan_fiber: { ipv4_address: 172.30.0.11 }
+  field-centro:
+    <<: *field
+    build: { context: ./services, dockerfile: field-sim/Dockerfile }
+    environment: { TZ: "${TZ}", SPACE: centro, BROKER_IP: 10.10.1.2, READ_INTERVAL_SECONDS: "${READ_INTERVAL_SECONDS}" }
+    volumes:
+      - ./secrets/devices/centro:/secrets/devices:ro
+      - ./secrets/public:/secrets/public:ro
+      - field_centro:/var/lib/field
+    networks:
+      iot_centro: { ipv4_address: 10.10.1.3 }
+    depends_on: [edge-centro]
+
+  edge-escola:
+    <<: *edge
+    hostname: edge-escola
+    environment: { <<: *edge-env, SPACE: escola, SITE_ID: "2", EDGE_IP: 10.10.2.2, WG_IP: 10.50.0.12, LOG_HOST: edge-escola }
+    volumes:
+      - ./secrets/edges/escola:/secrets/edge:ro
+      - ./secrets/public:/secrets/public:ro
+      - edge_escola:/var/lib/vaurora
+    networks:
+      iot_escola: { ipv4_address: 10.10.2.2 }
+      wan_fiber: { ipv4_address: 172.30.0.12 }
+  field-escola:
+    <<: *field
+    environment: { TZ: "${TZ}", SPACE: escola, BROKER_IP: 10.10.2.2, READ_INTERVAL_SECONDS: "${READ_INTERVAL_SECONDS}" }
+    volumes:
+      - ./secrets/devices/escola:/secrets/devices:ro
+      - ./secrets/public:/secrets/public:ro
+      - field_escola:/var/lib/field
+    networks:
+      iot_escola: { ipv4_address: 10.10.2.3 }
+    depends_on: [edge-escola]
+
+  edge-ubs:
+    <<: *edge
+    hostname: edge-ubs
+    environment: { <<: *edge-env, SPACE: ubs, SITE_ID: "3", EDGE_IP: 10.10.3.2, WG_IP: 10.50.0.13, LOG_HOST: edge-ubs, HUB_4G_IP: 172.31.0.2, SMS_URL: "http://172.31.0.50:8080/sms" }
+    volumes:
+      - ./secrets/edges/ubs:/secrets/edge:ro
+      - ./secrets/public:/secrets/public:ro
+      - edge_ubs:/var/lib/vaurora
+    networks:
+      iot_ubs: { ipv4_address: 10.10.3.2 }
+      wan_fiber: { ipv4_address: 172.30.0.13 }
+      wan_4g: { ipv4_address: 172.31.0.13 }
+  field-ubs:
+    <<: *field
+    environment: { TZ: "${TZ}", SPACE: ubs, BROKER_IP: 10.10.3.2, READ_INTERVAL_SECONDS: "${READ_INTERVAL_SECONDS}" }
+    volumes:
+      - ./secrets/devices/ubs:/secrets/devices:ro
+      - ./secrets/public:/secrets/public:ro
+      - field_ubs:/var/lib/field
+    networks:
+      iot_ubs: { ipv4_address: 10.10.3.3 }
+    depends_on: [edge-ubs]
+
+  edge-horta:
+    <<: *edge
+    hostname: edge-horta
+    environment: { <<: *edge-env, SPACE: horta, SITE_ID: "4", EDGE_IP: 10.10.4.2, WG_IP: 10.50.0.14, LOG_HOST: edge-horta }
+    volumes:
+      - ./secrets/edges/horta:/secrets/edge:ro
+      - ./secrets/public:/secrets/public:ro
+      - edge_horta:/var/lib/vaurora
+    networks:
+      iot_horta: { ipv4_address: 10.10.4.2 }
+      wan_fiber: { ipv4_address: 172.30.0.14 }
+  field-horta:
+    <<: *field
+    environment: { TZ: "${TZ}", SPACE: horta, BROKER_IP: 10.10.4.2, READ_INTERVAL_SECONDS: "${READ_INTERVAL_SECONDS}" }
+    volumes:
+      - ./secrets/devices/horta:/secrets/devices:ro
+      - ./secrets/public:/secrets/public:ro
+      - field_horta:/var/lib/field
+    networks:
+      iot_horta: { ipv4_address: 10.10.4.3 }
+    depends_on: [edge-horta]
+
+  edge-abrigo:
+    <<: *edge
+    hostname: edge-abrigo
+    environment: { <<: *edge-env, SPACE: abrigo, SITE_ID: "5", EDGE_IP: 10.10.5.2, WG_IP: 10.50.0.15, LOG_HOST: edge-abrigo, HUB_4G_IP: 172.31.0.2, SMS_URL: "http://172.31.0.50:8080/sms" }
+    volumes:
+      - ./secrets/edges/abrigo:/secrets/edge:ro
+      - ./secrets/public:/secrets/public:ro
+      - edge_abrigo:/var/lib/vaurora
+    networks:
+      iot_abrigo: { ipv4_address: 10.10.5.2 }
+      wan_fiber: { ipv4_address: 172.30.0.15 }
+      wan_4g: { ipv4_address: 172.31.0.15 }
+  field-abrigo:
+    <<: *field
+    environment: { TZ: "${TZ}", SPACE: abrigo, BROKER_IP: 10.10.5.2, READ_INTERVAL_SECONDS: "${READ_INTERVAL_SECONDS}" }
+    volumes:
+      - ./secrets/devices/abrigo:/secrets/devices:ro
+      - ./secrets/public:/secrets/public:ro
+      - field_abrigo:/var/lib/field
+    networks:
+      iot_abrigo: { ipv4_address: 10.10.5.3 }
+    depends_on: [edge-abrigo]
+
+  # ─── Panel v2 behind the WAF ───
+  panel:
+    build: { context: ./services, dockerfile: panel-v2/Dockerfile }
+    image: vaurora/panel:2.0
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      LOG_HOST: panel
+      LOG_DIR: /var/log/vaurora/panel
+      PANEL_SESSION_SECRET: ${PANEL_SESSION_SECRET}
+      PANEL_DB_PASSWORD: ${PANEL_DB_PASSWORD}
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD}
+    volumes:
+      - ./secrets/public:/secrets/public:ro
+      - ./secrets/cloud/panel:/secrets/client:ro
+      - panel_logs:/var/log/vaurora/panel
+    networks:
+      cloud: { ipv4_address: 10.60.0.21 }
+    depends_on:
+      db: { condition: service_healthy }
+
+  # Wazuh only tails what exists when it starts, so every watched file is created before it.
+  log-files-init:
+    image: vaurora/hub:1.0
+    pull_policy: never
+    entrypoint:
+      - sh
+      - -c
+      - >-
+        touch /cloud/vpn.log /cloud/ztna.log /cloud/vilaaurora-ingest.log /cloud/hub-firewall.log /cloud/vilaaurora-ai.log /cloud/waf-access.log
+        /panel/vilaaurora-panel.log /pg/postgresql.log
+        /legacy/legacy-panel-access.log /legacy/legacy-panel-app.log /legacy/legacy-vpn-auth.log /legacy/legacy-controller.log;
+        chown -R 1000:1000 /panel; chmod 666 /legacy/*.log /pg/postgresql.log
+    volumes:
+      - panel_logs:/panel
+      - cloud_logs:/cloud
+      - pg_logs:/pg
+      - legacy_central:/legacy
+
+  waf:
+    image: owasp/modsecurity-crs:4.7.0-nginx-202410090410
+    restart: unless-stopped
+    user: "0"
+    environment:
+      TZ: ${TZ}
+      BACKEND: http://10.60.0.21:8000
+      PORT: "8080"
+      SSL_PORT: "8443"
+      NGINX_ALWAYS_TLS_REDIRECT: "on"
+      PARANOIA: "1"
+      ANOMALY_INBOUND: "5"
+      MODSEC_RULE_ENGINE: "on"
+      ACCESSLOG: /var/log/vaurora/waf-access.log
+      ERRORLOG: /var/log/vaurora/waf-error.log
+      MODSEC_AUDIT_LOG: /var/log/vaurora/waf-audit.log
+    volumes:
+      - ./secrets/cloud/waf/server.crt:/etc/nginx/conf/server.crt:ro
+      - ./secrets/cloud/waf/server.key:/etc/nginx/conf/server.key:ro
+      - cloud_logs:/var/log/vaurora
+    networks:
+      cloud: { ipv4_address: 10.60.0.20 }
+    depends_on: [panel]
+
+  waf-routes:
+    image: vaurora/hub:1.0
+    pull_policy: never
+    network_mode: service:waf
+    cap_add: [NET_ADMIN]
+    entrypoint: [sh, /route.sh]
+    volumes: [./services/net-init/route.sh:/route.sh:ro]
+    depends_on: [waf, hub]
+
+  seed:
+    build: { context: ./services, dockerfile: seed/Dockerfile }
+    image: vaurora/seed:1.0
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      BADGE_HMAC_KEY: ${BADGE_HMAC_KEY}
+    volumes: [./secrets/lab:/secrets/out]
+    networks: [cloud]
+    depends_on:
+      db: { condition: service_healthy }
+
+  # ─── SIEM and automated response ───
+  wazuh:
+    image: wazuh/wazuh-manager:4.9.2
+    restart: unless-stopped
+    hostname: wazuh
+    environment:
+      TZ: ${TZ}
+      INDEXER_URL: https://10.60.0.41:9200
+    volumes:
+      - ./services/siem/ossec.conf:/wazuh-config-mount/etc/ossec.conf:ro
+      - ./services/siem/rules/local_rules.xml:/wazuh-config-mount/etc/rules/local_rules.xml:ro
+      - ./services/siem/decoders/local_decoder.xml:/wazuh-config-mount/etc/decoders/local_decoder.xml:ro
+      - wazuh_logs:/var/ossec/logs
+      - cloud_logs:/vaurora/cloud:ro
+      - panel_logs:/vaurora/panel:ro
+      - pg_logs:/vaurora/pg:ro
+      - legacy_central:/vaurora/legacy:ro
+    networks:
+      cloud: { ipv4_address: 10.60.0.40 }
+    depends_on:
+      log-files-init: { condition: service_completed_successfully }
+
+  wazuh-routes:
+    image: vaurora/hub:1.0
+    pull_policy: never
+    network_mode: service:wazuh
+    cap_add: [NET_ADMIN]
+    entrypoint: [sh, /route.sh]
+    volumes: [./services/net-init/route.sh:/route.sh:ro]
+    depends_on: [wazuh, hub]
+
+  soar:
+    build: { context: ./services, dockerfile: soar/Dockerfile }
+    image: vaurora/soar:1.0
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      LOG_HOST: soar
+      HUB_API_TOKEN: ${HUB_API_TOKEN}
+    volumes:
+      - ./secrets/public:/secrets/public:ro
+      - ./secrets/cloud/soar:/secrets/client:ro
+      - wazuh_logs:/wazuh/logs:ro
+      - cloud_logs:/var/log/vaurora
+    networks:
+      cloud: { ipv4_address: 10.60.0.50 }
+    depends_on: [wazuh, cloud-broker]
+
+  # ─── Defensive AI ───
+  ai-detector:
+    build: { context: ./services, dockerfile: ai/Dockerfile }
+    image: vaurora/ai:1.0
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      LOG_HOST: ai-detector
+      AI_DB_PASSWORD: ${AI_DB_PASSWORD}
+    volumes:
+      - ./docs/results:/results
+      - cloud_logs:/var/log/vaurora
+    networks: [cloud]
+    depends_on:
+      db: { condition: service_healthy }
+
+  ollama:
+    image: ollama/ollama:0.3.14
+    profiles: [llm]
+    environment: { TZ: "${TZ}", OLLAMA_KEEP_ALIVE: 30m }
+    volumes: [ollama_models:/root/.ollama]
+    # Internal only: the model is pulled once through scripts/pull_model.sh, then has no internet.
+    networks: [ai]
+
+  llm-triage:
+    build: { context: ./services, dockerfile: llm-triage/Dockerfile }
+    image: vaurora/llm-triage:1.0
+    profiles: [llm]
+    environment:
+      TZ: ${TZ}
+      LOG_HOST: llm-triage
+      OLLAMA_URL: http://ollama:11434
+      LLM_MODEL: ${LLM_MODEL}
+    volumes:
+      - ./docs/results:/results
+      - cloud_logs:/var/log/vaurora
+    networks: [ai]
+    depends_on: [ollama]
+
+  # ─── Mail authentication lab (fictitious domain, nothing leaves the network) ───
+  lab-dns:
+    image: coredns/coredns:1.11.3
+    profiles: [mail]
+    command: [-conf, /dns/Corefile]
+    volumes: [./services/mail-auth/dns:/dns:ro]
+    networks:
+      mail: { ipv4_address: 172.27.0.53 }
+
+  mail-receiver:
+    build: { context: ./services, dockerfile: mail-auth/Dockerfile }
+    image: vaurora/mail-auth:1.0
+    profiles: [mail]
+    environment: { TZ: "${TZ}", LOG_HOST: mail-receiver, LAB_DNS: 172.27.0.53 }
+    command: [python, -u, receiver.py]
+    volumes:
+      - ./evidence/raw/mail:/mailbox
+      - cloud_logs:/var/log/vaurora
+    networks:
+      mail: { ipv4_address: 172.27.0.25 }
+    depends_on: [lab-dns]
+
+  mailpit:
+    image: axllent/mailpit:v1.20
+    profiles: [phishing]
+    networks:
+      phishing: { ipv4_address: 172.26.0.25 }
+
+  gophish:
+    image: gophish/gophish:0.12.1
+    profiles: [phishing]
+    volumes: [./phishing/gophish-config.json:/opt/gophish/config.json:ro]
+    networks:
+      phishing: { ipv4_address: 172.26.0.10 }
+    depends_on: [mailpit]
+
+  phishing-runner:
+    image: vaurora/attacker:1.0
+    pull_policy: never
+    profiles: [phishing]
+    environment: { TZ: "${TZ}" }
+    volumes:
+      - ./phishing:/phishing:ro
+      - ./docs/results:/results
+    networks:
+      phishing: { ipv4_address: 172.26.0.20 }
+    depends_on: [gophish]
+
+  # ─── Operator workstation: a WireGuard peer that needs MFA before reaching the panel ───
+  operator-ws:
+    build: { context: ./services, dockerfile: attacker/Dockerfile }
+    image: vaurora/attacker:1.0
+    pull_policy: never
+    profiles: [tools]
+    cap_add: [NET_ADMIN]
+    environment: { TZ: "${TZ}", ZTNA_OPERATOR_TOTP: "${ZTNA_OPERATOR_TOTP}" }
+    volumes: [./secrets/operator:/secrets/operator:ro]
+    networks:
+      wan_fiber: { ipv4_address: 172.30.0.70 }
+
+  # ─── Offensive tooling, isolated: no internet, only the lab's external segments ───
+  attacker:
+    image: vaurora/attacker:1.0
+    pull_policy: never
+    profiles: [tools]
+    cap_add: [NET_ADMIN]
+    environment: { TZ: "${TZ}" }
+    volumes:
+      - ./attack:/attack:ro
+      - ./evidence/raw/attacker:/out
+    networks:
+      wan_fiber: { ipv4_address: 172.30.0.66 }
+      wan_legacy: { ipv4_address: 172.29.0.66 }
+
+  # ─── Legacy stack reproduced for INC-VA-0712 (never exposed) ───
+  db-legacy:
+    image: postgres:16.4-alpine
+    profiles: [legacy]
+    entrypoint: [sh, -c, 'chown postgres:postgres /var/log/pg && exec docker-entrypoint.sh "$$@"', --]
+    command: [postgres, -c, log_statement=all, -c, "log_line_prefix=%m %u@%d %h ", -c, logging_collector=on, -c, log_directory=/var/log/pg, -c, log_filename=legacy-postgresql.log, -c, log_file_mode=0644]
+    environment:
+      TZ: ${TZ}
+      POSTGRES_DB: legacy
+      POSTGRES_PASSWORD: ${LEGACY_DB_PASSWORD}
+    volumes:
+      - ./db/legacy:/docker-entrypoint-initdb.d:ro
+      - legacy_pg_logs:/var/log/pg
+    networks: [legacy]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres -d legacy]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  panel-v1:
+    build: { context: ./services, dockerfile: legacy/panel/Dockerfile }
+    image: vaurora/panel-v1:1.0
+    profiles: [legacy]
+    hostname: panel-v1
+    cap_add: [SYS_PTRACE]  # lets the forensic step read this process's memory (EV-01)
+    environment:
+      TZ: ${TZ}
+      LOG_HOST: panel-v1
+      LOG_DIR: /central
+      LEGACY_DB_PASSWORD: ${LEGACY_DB_PASSWORD}
+      LEGACY_SESSION_SECRET: ${PANEL_SESSION_SECRET}
+      LEGACY_COORDINATOR_PASSWORD: ${LEGACY_VPN_PASSWORD}
+    volumes: [legacy_central:/central]
+    networks:
+      legacy: { ipv4_address: 172.28.0.20 }
+    depends_on:
+      db-legacy: { condition: service_healthy }
+
+  legacy-vpn:
+    build: { context: ./services, dockerfile: legacy/vpn/Dockerfile }
+    image: vaurora/legacy-vpn:1.0
+    profiles: [legacy]
+    hostname: legacy-vpn
+    environment: { TZ: "${TZ}", LEGACY_VPN_PASSWORD: "${LEGACY_VPN_PASSWORD}" }
+    volumes: [legacy_central:/central]
+    networks:
+      wan_legacy: { ipv4_address: 172.29.0.2 }
+      legacy: { ipv4_address: 172.28.0.2 }
+
+  legacy-controller:
+    build: { context: ./services, dockerfile: legacy/controller/Dockerfile }
+    image: vaurora/legacy-controller:1.0
+    profiles: [legacy]
+    hostname: legacy-controller
+    environment:
+      TZ: ${TZ}
+      LOG_HOST: legacy-controller
+      LOG_DIR: /central
+      LEGACY_DB_PASSWORD: ${LEGACY_DB_PASSWORD}
+    volumes: [legacy_central:/central]
+    networks: [legacy]
+    depends_on:
+      db-legacy: { condition: service_healthy }
+
+
+networks:
+  ai:
+    internal: true
+    ipam: { config: [{ subnet: 172.25.0.0/24, gateway: 172.25.0.254 }] }
+  mail:
+    internal: true
+    ipam: { config: [{ subnet: 172.27.0.0/24, gateway: 172.27.0.254 }] }
+  phishing:
+    internal: true
+    ipam: { config: [{ subnet: 172.26.0.0/24, gateway: 172.26.0.254 }] }
+  wan_legacy:
+    internal: true
+    ipam: { config: [{ subnet: 172.29.0.0/24, gateway: 172.29.0.254 }] }
+  legacy:
+    internal: true
+    ipam: { config: [{ subnet: 172.28.0.0/24, gateway: 172.28.0.254 }] }
+  wan_fiber:
+    internal: true
+    ipam: { config: [{ subnet: 172.30.0.0/24, gateway: 172.30.0.254 }] }
+  wan_4g:
+    internal: true
+    ipam: { config: [{ subnet: 172.31.0.0/24, gateway: 172.31.0.254 }] }
+  cloud:
+    internal: true
+    ipam: { config: [{ subnet: 10.60.0.0/24, gateway: 10.60.0.254 }] }
+  iot_centro:
+    internal: true
+    ipam: { config: [{ subnet: 10.10.1.0/24, gateway: 10.10.1.254 }] }
+  iot_escola:
+    internal: true
+    ipam: { config: [{ subnet: 10.10.2.0/24, gateway: 10.10.2.254 }] }
+  iot_ubs:
+    internal: true
+    ipam: { config: [{ subnet: 10.10.3.0/24, gateway: 10.10.3.254 }] }
+  iot_horta:
+    internal: true
+    ipam: { config: [{ subnet: 10.10.4.0/24, gateway: 10.10.4.254 }] }
+  iot_abrigo:
+    internal: true
+    ipam: { config: [{ subnet: 10.10.5.0/24, gateway: 10.10.5.254 }] }
+
+volumes:
+  ollama_models:
+  wazuh_logs:
+  panel_logs:
+  legacy_central:
+  legacy_pg_logs:
+  db_data:
+  pg_logs:
+  broker_data:
+  cloud_logs:
+  edge_centro:
+  edge_escola:
+  edge_ubs:
+  edge_horta:
+  edge_abrigo:
+  field_centro:
+  field_escola:
+  field_ubs:
+  field_horta:
+  field_abrigo:

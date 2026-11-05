@@ -1,0 +1,4 @@
+$ docker compose --profile tools exec -T operator-ws sh -c curl -sk -m 6 -o /dev/null -w '%{http_code}' https://10.60.0.20:8443/login
+[exit 28]
+000
+

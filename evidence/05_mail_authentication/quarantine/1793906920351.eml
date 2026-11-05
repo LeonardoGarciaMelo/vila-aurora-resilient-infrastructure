@@ -1,0 +1,10 @@
+Authentication-Results: lab-mx; spf=fail smtp.mailfrom=avisos@vilaaurora.example; dkim=fail header.d=none; dmarc=fail (p=quarantine) header.from=vilaaurora.example
+From: avisos@vilaaurora.example
+To: coordenacao@vilaaurora.example
+Subject: Atualizacao obrigatoria do acesso ao painel
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+
+SIMULACAO DE LABORATORIO. Dominio ficticio, nenhum link real.
+

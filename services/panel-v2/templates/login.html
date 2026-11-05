@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Entrar{% endblock %}
+{% block content %}
+<h2>Entrar no painel</h2>
+<p>Este é o único endereço do painel. A prefeitura nunca pede sua senha por e-mail ou WhatsApp. Em caso de dúvida, ligue para o número oficial da associação.</p>
+<form class="box" method="post">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label for="username">Usuário</label>
+  <input id="username" name="username" autocomplete="username" required>
+  <label for="password">Senha</label>
+  <input id="password" name="password" type="password" autocomplete="current-password" required>
+  <label for="totp">Código de 6 números do aplicativo</label>
+  <input id="totp" name="totp" inputmode="numeric" autocomplete="one-time-code" required>
+  <button>Entrar</button>
+</form>
+{% endblock %}

@@ -1,0 +1,89 @@
+$ docker run --rm --network vaurora_cloud -v <repo>/tests/security:/t:ro -v <repo>/secrets/lab/demo_users.json:/lab/demo_users.json:ro --entrypoint sh vaurora/attacker:1.0 -c python3 /t/app_checks.py
+[exit 0]
+{
+  "login_without_valid_totp_rejected": {
+    "pass": true,
+    "detail": 401
+  },
+  "operator_login_with_totp": {
+    "pass": true,
+    "detail": 302
+  },
+  "operator_cannot_read_access_history": {
+    "pass": true,
+    "detail": 403
+  },
+  "operator_cannot_send_commands": {
+    "pass": true,
+    "detail": 403
+  },
+  "auditor_reads_history": {
+    "pass": true,
+    "detail": 200
+  },
+  "auditor_sees_only_pseudonyms": {
+    "pass": true,
+    "detail": "no BADGE- identifiers in page"
+  },
+  "auditor_cannot_manage_users": {
+    "pass": true,
+    "detail": 403
+  },
+  "sqli_manual_blocked_by_waf": {
+    "pass": true,
+    "detail": "HTTP 403 expected from WAF"
+  },
+  "sqli_direct_session_is_authenticated": {
+    "pass": true,
+    "detail": 200
+  },
+  "sqli_direct_or_tautology_rejected_400": {
+    "pass": true,
+    "detail": 400
+  },
+  "sqli_direct_or_tautology_generic_message": {
+    "pass": true,
+    "detail": "no DB detail in body"
+  },
+  "sqli_direct_union_rejected_400": {
+    "pass": true,
+    "detail": 400
+  },
+  "sqli_direct_union_generic_message": {
+    "pass": true,
+    "detail": "no DB detail in body"
+  },
+  "sqli_direct_stacked_rejected_400": {
+    "pass": true,
+    "detail": 400
+  },
+  "sqli_direct_stacked_generic_message": {
+    "pass": true,
+    "detail": "no DB detail in body"
+  },
+  "high_impact_enters_queue": {
+    "pass": true,
+    "detail": "queue ids=['1']"
+  },
+  "technician_cannot_approve": {
+    "pass": true,
+    "detail": 403
+  },
+  "self_approval_refused": {
+    "pass": true,
+    "detail": "message shown"
+  },
+  "other_coordinator_approves": {
+    "pass": true,
+    "detail": 200
+  },
+  "post_without_csrf_rejected": {
+    "pass": true,
+    "detail": 400
+  },
+  "audit_trail_has_decisions": {
+    "pass": true,
+    "detail": "audit page lists decisions"
+  }
+}
+

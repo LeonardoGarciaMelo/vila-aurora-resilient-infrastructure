@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-11-05T19:59:49.491114",
+  "tool": "axe-core via axe-playwright-python",
+  "tags": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag21a",
+    "wcag21aa"
+  ],
+  "pages": {
+    "login": {
+      "violations": [],
+      "passes": 14
+    },
+    "dashboard": {
+      "violations": [],
+      "passes": 16
+    },
+    "alerts": {
+      "violations": [],
+      "passes": 16
+    },
+    "commands": {
+      "violations": [],
+      "passes": 18
+    },
+    "history": {
+      "violations": [],
+      "passes": 22
+    },
+    "audit": {
+      "violations": [],
+      "passes": 17
+    },
+    "users": {
+      "violations": [],
+      "passes": 17
+    }
+  },
+  "total_violations": 0,
+  "keyboard": {
+    "first_tab_reaches_skip_link": true,
+    "tab_order": [
+      "username",
+      "password",
+      "totp",
+      "BUTTON"
+    ],
+    "focus_outline": "solid"
+  },
+  "mobile_390px_horizontal_overflow": false,
+  "base_font_px": 18,
+  "note": "Automated tools catch only part of WCAG; a manual review with volunteers is still required."
+}

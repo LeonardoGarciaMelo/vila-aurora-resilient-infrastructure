@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-11-05T16:45:08.075001",
+  "behaviour_source": "SCRIPTED PERSONAS with fixed probabilities: validates the pipeline, these are not human results",
+  "credentials_stored": false,
+  "targets": "fictitious accounts created by the team",
+  "campaigns": [
+    {
+      "name": "before_training",
+      "accounts": 20,
+      "open_rate": 90.0,
+      "click_rate": 80.0,
+      "submit_rate": 30.0,
+      "report_rate": 5.0,
+      "seconds_to_first_report": 2.3
+    },
+    {
+      "name": "after_training",
+      "accounts": 20,
+      "open_rate": 80.0,
+      "click_rate": 15.0,
+      "submit_rate": 5.0,
+      "report_rate": 55.0,
+      "seconds_to_first_report": 2.2
+    }
+  ],
+  "submitted_values_recorded_by_gophish": true
+}

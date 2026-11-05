@@ -1,0 +1,16 @@
+$ docker compose exec -T panel python -c 
+import base64,json,time,uuid,ssl
+from datetime import datetime
+import paho.mqtt.client as mqtt
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+key=load_pem_private_key(open('/secrets/client/command_signing.key','rb').read(),None)
+when=datetime.now().replace(hour=10,minute=40).timestamp()
+body=json.dumps(dict(id=str(uuid.uuid4()),site='escola',actuator='pump',action='on',user='coordenacao.demo',issued_at=time.time(),execute_at=when))
+env=json.dumps(dict(body=body,sig=base64.b64encode(b'0'*64).decode()))
+ctx=ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT);ctx.load_verify_locations('/secrets/public/ca-chain.crt');ctx.load_cert_chain('/secrets/client/client.crt','/secrets/client/client.key')
+c=mqtt.Client(mqtt.CallbackAPIVersion.VERSION2,client_id='panel-test');c.tls_set_context(ctx);c.connect('10.60.0.30',8883);c.loop_start()
+c.publish('vilaaurora/escola/command/pump',env,qos=1).wait_for_publish(5);c.loop_stop();c.disconnect()
+
+[exit 0]
+
+

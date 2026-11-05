@@ -1,0 +1,9 @@
+2026-11-05T16:29:06-03:00 STEP vpn_login user=coordenadora target=172.29.0.2 auth=password_only
+2026-11-05T16:29:08-03:00 STEP panel_login user=coordenadora via=vpn
+2026-11-05T16:29:08-03:00 STEP sqli_detect tool=sqlmap target=/history param=q
+2026-11-05T16:29:40-03:00 STEP sqli_dump table=usuarios
+2026-11-05T16:29:42-03:00 STEP sqli_update_schedule payload=stacked
+2026-11-05T16:29:42-03:00 STEP wait_for_pump_effect seconds=180
+2026-11-05T16:32:06-03:00 STEP fiber_cut simulated
+2026-11-05T16:32:42-03:00 STEP log_tampering target=vpn_local_auth_log
+2026-11-05T16:32:43-03:00 STEP done

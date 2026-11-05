@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Auditoria{% endblock %}
+{% block content %}
+<h2>Trilha de auditoria</h2>
+<div class="table-wrap"><table>
+  <caption>Últimas ações registradas</caption>
+  <thead><tr><th scope="col">Quando</th><th scope="col">Usuário</th><th scope="col">Ação</th><th scope="col">Detalhe</th><th scope="col">Origem</th></tr></thead>
+  <tbody>{% for r in rows %}<tr><td>{{ r.at.strftime('%d/%m %H:%M:%S') }}</td><td>{{ r.username }}</td><td>{{ r.action }}</td><td>{{ r.detail }}</td><td>{{ r.source_ip }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

@@ -1,0 +1,5 @@
+$ pki/pki.sh issue ubs-testrevoke-1793907206 <repo>/secrets/devices/ubs  ubs-testrevoke-1793907206
+[exit 0]
+issued ubs-testrevoke-1793907206 serial=1024
+
+

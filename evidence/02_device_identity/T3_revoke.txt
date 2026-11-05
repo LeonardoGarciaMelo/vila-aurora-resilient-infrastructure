@@ -1,0 +1,5 @@
+$ pki/pki.sh revoke ubs-testrevoke-1793907206
+[exit 0]
+revoked ubs-testrevoke-1793907206 serial=1024
+
+

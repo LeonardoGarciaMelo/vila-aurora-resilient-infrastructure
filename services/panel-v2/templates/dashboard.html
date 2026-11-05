@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Espaços{% endblock %}
+{% block content %}
+<h2>Como estão os espaços agora</h2>
+<ul class="cards">
+  {% for site in sites %}
+  <li class="card">
+    <h3>{{ site.name }}</h3>
+    <p class="state state-{{ 'Atencao' if site.state == 'Atenção' else site.state }}"><span aria-hidden="true">{{ site.icon }}</span> {{ site.state }}</p>
+    {% for note in site.notes %}<p>{{ note }}</p>{% endfor %}
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

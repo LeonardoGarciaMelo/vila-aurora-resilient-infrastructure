@@ -1,0 +1,41 @@
+$ docker compose exec -T hub wg show wg0
+[exit 0]
+interface: wg0
+  public key: RppoJ0lwg9n41Z6Ve/jvsCbX59uXyWleRY1o3+OGbzk=
+  private key: (hidden)
+  listening port: 51820
+
+peer: B/rAhfHYiH57tUKDLHBi+2oRze8vOMpSKyD2uwNs5xo=
+  endpoint: 172.30.0.13:50197
+  allowed ips: 10.50.0.13/32
+  latest handshake: 1 minute, 22 seconds ago
+  transfer: 61.17 KiB received, 20.79 KiB sent
+
+peer: 9dmBAuwfmqdUStEG9twzbh2UH3RanldW/mSG2b46xgI=
+  endpoint: 172.30.0.11:47364
+  allowed ips: 10.50.0.11/32
+  latest handshake: 1 minute, 23 seconds ago
+  transfer: 58.96 KiB received, 18.01 KiB sent
+
+peer: AEY4bSMigtXWKkyTxneTlmTk6TIQmSC+jenmPxlA/Wg=
+  endpoint: 172.30.0.15:50098
+  allowed ips: 10.50.0.15/32
+  latest handshake: 1 minute, 23 seconds ago
+  transfer: 99.08 KiB received, 18.43 KiB sent
+
+peer: 7qtJqCtolc4NlJoqiDy9EyJ0oc4qSG2b59n6gyxxvh0=
+  endpoint: 172.30.0.12:56452
+  allowed ips: 10.50.0.12/32
+  latest handshake: 1 minute, 24 seconds ago
+  transfer: 87.21 KiB received, 18.73 KiB sent
+
+peer: NhPg7P52kQzoLxcrxEJWOGtjDcLi5/nS/AIJeBULPRQ=
+  endpoint: 172.30.0.14:37756
+  allowed ips: 10.50.0.14/32
+  latest handshake: 1 minute, 24 seconds ago
+  transfer: 59.43 KiB received, 18.12 KiB sent
+
+peer: UJPCXlPArv3ior8VMDGVC6ECTsFaDleP1z1fKC22ynw=
+  allowed ips: 10.70.0.10/32
+
+

@@ -1,0 +1,5 @@
+$ docker run --rm --network vaurora_iot_ubs --ip 10.10.3.11 -v <repo>/secrets/public:/p:ro --entrypoint sh vaurora/attacker:1.0 -c openssl ecparam -name prime256v1 -genkey -noout -out /tmp/r.key && openssl req -x509 -new -key /tmp/r.key -days 1 -subj /CN=ubs-rogue-01 -out /tmp/r.crt && mosquitto_pub -h 10.10.3.2 -p 8883 --cafile /p/ca-chain.crt --tls-version tlsv1.3 --cert /tmp/r.crt --key /tmp/r.key -t vilaaurora/ubs/ubs-rogue-01/telemetry -m x
+[exit 7]
+
+Error: The connection was lost.
+

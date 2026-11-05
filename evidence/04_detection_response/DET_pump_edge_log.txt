@@ -1,0 +1,8 @@
+$ docker compose logs --since 90s --no-log-prefix edge-escola
+[exit 0]
+Nov  5 16:44:08 edge-escola vilaaurora-edge: site=escola event=tls_reject srcip=10.10.2.9 detail=peer_did_not_return_a_certificate
+Nov  5 16:44:11 edge-escola vilaaurora-edge: site=escola event=device_isolated ip=10.10.2.9 by=soar
+Nov  5 16:44:15 edge-escola vilaaurora-atuador: site=escola atuador=pump action=on user=coordenacao.demo result=rejected reason=out_of_window
+Nov  5 16:44:17 edge-escola vilaaurora-edge: site=escola event=safe_mode enabled=true by=soar
+
+

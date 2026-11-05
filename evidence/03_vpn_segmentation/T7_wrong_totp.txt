@@ -1,0 +1,4 @@
+$ docker compose --profile tools exec -T -e HUB=RppoJ0lwg9n41Z6Ve/jvsCbX59uXyWleRY1o3+OGbzk= operator-ws sh -c curl -s -m 8 -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' -d '{"totp":"000000"}' http://10.70.0.1:8443/login
+[exit 0]
+401
+

@@ -1,0 +1,9 @@
+evidence,timestamp,action,source_or_destination,responsible,sha256
+EV-01,2026-11-05T16:33:04-03:00,Collection,/proc/pid/mem reader -> evidence/forensics/images/EV-01_panel_process_memory.raw,Equipe do laboratorio,6758961eb6a74c2d24e9d65199b248d9f0d223a87bc96c62dcf8149ee7817e67
+EV-02,2026-11-05T16:33:07-03:00,Collection,docker export -> evidence/forensics/images/EV-02_panel_filesystem.tar,Equipe do laboratorio,db3bcff0b2779262e7c75050603386e058083e278281e8937475c4c9c5125fc5
+EV-03,2026-11-05T16:33:08-03:00,Collection,docker cp + tar -> evidence/forensics/images/EV-03_vpn_logs.tar,Equipe do laboratorio,54708aa1a228df7a295173bb058e7995ecd840993d5c8d1933b8261450cbc63a
+EV-04,2026-11-05T16:33:08-03:00,Collection,docker cp + tar -> evidence/forensics/images/EV-04_panel_logs.tar,Equipe do laboratorio,21d1575911f44395399fea58c7ef1b8cc35fab0470ed81051613884f81726e17
+EV-05,2026-11-05T16:33:08-03:00,Collection,docker cp + tar -> evidence/forensics/images/EV-05_postgres_logs.tar,Equipe do laboratorio,ea34e8ae36c883509bacdb1278539fd4e545c9c3d546fce13ce396e8485b7280
+EV-06,2026-11-05T16:33:08-03:00,Collection,docker cp + tar -> evidence/forensics/images/EV-06_controller_logs.tar,Equipe do laboratorio,2220a12439defe4b53534e0eceb42a62ce760c72d46512b89ae2c6ace9c0f89c
+EV-07,2026-11-05T16:33:09-03:00,Collection,alerts.json export -> evidence/forensics/images/EV-07_wazuh_alerts.json,Equipe do laboratorio,990a17cc5755f3588630b5ffbaac5af2642944a3614c122b57e3e96c60ed3dc8
+EV-08,2026-11-05T16:33:09-03:00,Collection,lab MTA quarantine copy -> evidence/forensics/images/EV-08_phishing_message.eml,Equipe do laboratorio,bdf29e5b5df838551b45c59f3aa31c4ccf99edb294af88e27ebc55f0cec83cef

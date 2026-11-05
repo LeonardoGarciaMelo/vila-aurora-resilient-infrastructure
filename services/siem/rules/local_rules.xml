@@ -1,0 +1,93 @@
+<group name="vilaaurora,">
+
+  <!-- (a) Anomalous VPN login. Only operator peers: edges handshake around the clock by design. -->
+  <rule id="100100" level="12">
+    <decoded_as>wireguard-handshake</decoded_as>
+    <field name="peer">^operator</field>
+    <field name="after_hours">yes</field>
+    <description>VPN: operator handshake outside expected hours (peer $(peer), $(srcip))</description>
+    <mitre><id>T1133</id></mitre>
+    <group>vpn_anomaly,</group>
+  </rule>
+  <rule id="100101" level="12">
+    <decoded_as>wireguard-handshake</decoded_as>
+    <field name="known_ip">no</field>
+    <description>VPN: handshake from an address not expected for this peer ($(peer), $(srcip))</description>
+    <mitre><id>T1078</id></mitre>
+    <group>vpn_anomaly,</group>
+  </rule>
+
+  <!-- (b) SQL Injection pattern, URL-encoded or not, on the hardened WAF log and the legacy panel. -->
+  <rule id="100110" level="13">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(union((\s|%20|\+)+all)?(\s|%20|\+)+select|(%27|')(\s|%20|\+)*or(\s|%20|\+)*(%27|')?\d|sleep(%28|\()|information_schema|pg_sleep|(%3B|;)(\s|%20|\+)*(update|drop|insert))</url>
+    <description>Panel: SQL Injection attempt from $(srcip)</description>
+    <mitre><id>T1190</id></mitre>
+    <group>sqli,</group>
+  </rule>
+  <rule id="100111" level="13">
+    <decoded_as>legacy-panel</decoded_as>
+    <url type="pcre2">(?i)(union((\s|%20|\+)+all)?(\s|%20|\+)+select|(%27|')(\s|%20|\+)*or(\s|%20|\+)*(%27|')?\d|sleep(%28|\()|information_schema|pg_sleep|(%3B|;)(\s|%20|\+)*(update|drop|insert))</url>
+    <description>Legacy panel: SQL Injection attempt from $(srcip)</description>
+    <mitre><id>T1190</id></mitre>
+    <group>sqli,</group>
+  </rule>
+
+  <!-- (c) Device without a valid certificate. -->
+  <rule id="100120" level="10">
+    <decoded_as>vilaaurora-edge</decoded_as>
+    <field name="detail">\.+</field>
+    <match>event=tls_reject</match>
+    <description>MQTT: device without a valid certificate at $(site) ($(srcip), $(detail))</description>
+    <mitre><id>T1078</id></mitre>
+    <group>device_identity,</group>
+  </rule>
+
+  <!-- (d) Actuator command outside the allowed time or profile. -->
+  <rule id="100130" level="13">
+    <decoded_as>vilaaurora-atuador</decoded_as>
+    <field name="reason">out_of_window</field>
+    <description>Actuator: $(atuador) command outside the allowed window at $(site) by $(dstuser)</description>
+    <mitre><id>T0836</id></mitre>
+    <group>actuator_abuse,</group>
+  </rule>
+  <rule id="100131" level="13">
+    <decoded_as>vilaaurora-atuador</decoded_as>
+    <field name="reason">bad_signature|replay|stale|not_allowed_for_key</field>
+    <description>Actuator: rejected command with invalid origin at $(site), reason $(reason)</description>
+    <mitre><id>T0836</id></mitre>
+    <group>actuator_abuse,</group>
+  </rule>
+  <rule id="100132" level="10">
+    <decoded_as>vilaaurora-panel</decoded_as>
+    <action>rbac_denied</action>
+    <description>Panel: user $(dstuser) tried a function outside their profile</description>
+    <group>actuator_abuse,</group>
+  </rule>
+
+  <!-- Supporting visibility. -->
+  <rule id="100140" level="11">
+    <decoded_as>vilaaurora-ai</decoded_as>
+    <match>event=anomaly</match>
+    <description>AI: telemetry anomaly on $(device) at $(site), score $(score)</description>
+    <group>ai_detection,</group>
+  </rule>
+  <rule id="100150" level="9">
+    <decoded_as>vilaaurora-panel</decoded_as>
+    <action type="pcre2">^login_(failed|locked)$</action>
+    <description>Panel: failed login for $(dstuser) from $(srcip)</description>
+    <group>authentication_failed,</group>
+  </rule>
+  <rule id="100160" level="5">
+    <match>SEG-DROP</match>
+    <description>Firewall: traffic between segments denied by default</description>
+    <group>segmentation,</group>
+  </rule>
+  <rule id="100170" level="7">
+    <decoded_as>legacy-controller</decoded_as>
+    <match>origin=db_schedule</match>
+    <description>Legacy controller: pump state changed by database schedule with no validation</description>
+    <mitre><id>T0831</id></mitre>
+    <group>legacy,</group>
+  </rule>
+</group>

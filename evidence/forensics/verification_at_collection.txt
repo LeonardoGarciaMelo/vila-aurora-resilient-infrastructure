@@ -1,0 +1,8 @@
+images/EV-01_panel_process_memory.raw: SUCESSO
+images/EV-02_panel_filesystem.tar: SUCESSO
+images/EV-03_vpn_logs.tar: SUCESSO
+images/EV-04_panel_logs.tar: SUCESSO
+images/EV-05_postgres_logs.tar: SUCESSO
+images/EV-06_controller_logs.tar: SUCESSO
+images/EV-07_wazuh_alerts.json: SUCESSO
+images/EV-08_phishing_message.eml: SUCESSO

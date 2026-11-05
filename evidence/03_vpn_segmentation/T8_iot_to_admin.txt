@@ -1,0 +1,6 @@
+$ docker run --rm --network=container:vaurora-field-ubs-1 --cap-add NET_ADMIN --entrypoint sh vaurora/attacker:1.0 -c ip route replace 10.60.0.0/24 via 10.10.3.2; nc -z -w 4 10.60.0.10 5432; echo nc_db_exit=$?; nc -z -w 4 10.60.0.20 8443; echo nc_panel_exit=$?; ip route del 10.60.0.0/24
+[exit 0]
+nc_db_exit=1
+nc_panel_exit=1
+
+

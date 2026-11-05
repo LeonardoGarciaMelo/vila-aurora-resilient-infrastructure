@@ -1,0 +1,19 @@
+Authentication-Results: lab-mx; spf=pass smtp.mailfrom=avisos@vilaaurora.example; dkim=pass header.d=vilaaurora.example; dmarc=pass (p=quarantine) header.from=vilaaurora.example
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=vilaaurora.example; i=@vilaaurora.example; q=dns/txt; s=mail;
+ t=1793906919; h=from : to : subject;
+ bh=TN7Kv0iZmRMVJi7Fs3QEG/Zudrl/nb7xpXnUzhKtdeI=;
+ b=j3updtsHRPFvtcHFvXBmooB6AFp3u6SCPhcYhO0i4+zc+RgDM0ZCqaIAxzgQgqjwJdeqU
+ QIcfFk+XtgOQyGJqZNdEojKE0cyX5u9W98v2Rt/R5794INa+AI63a4PJZL3tfbqMsrUqBX+
+ Gw2qhH9ya53GhMYsYU9L7jiu7GqB5pH5/VK+sw9j9RW9S6Ju64e2rxb0kKPk31TYUoFNr++
+ ASUm5Z3kbMgWglEenCbUU+y35LnAJDbntLjiolC5NYN1MP93BJx+PPUh89GtuyD0WtOWz31
+ sB9ZnQwpFzW9sbHsV2SXZZT3svAn/odoqDpzXshvmgLR3yj3GEYcDc1qZbTw==
+From: avisos@vilaaurora.example
+To: coordenacao@vilaaurora.example
+Subject: Reuniao da associacao
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+
+Reuniao na quinta as 19h. Mensagem de teste do laboratorio.
+

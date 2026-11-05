@@ -1,0 +1,1 @@
+rows_normal=105 rows_or=500 stack_trace_lines=3

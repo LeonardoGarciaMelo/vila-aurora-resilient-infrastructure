@@ -1,0 +1,5 @@
+$ docker compose --profile tools exec -T operator-ws sh -c curl -sk -m 8 -o /dev/null -w '%{http_code}\n' 'https://10.60.0.20:8443/history?q=x%27%20UNION%20ALL%20SELECT%20NULL--%20-'
+[exit 0]
+403
+
+

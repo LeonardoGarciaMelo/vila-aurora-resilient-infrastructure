@@ -1,0 +1,4 @@
+$ docker compose --profile tools exec -T -e HUB=RppoJ0lwg9n41Z6Ve/jvsCbX59uXyWleRY1o3+OGbzk= operator-ws sh -c ip link show wg0 >/dev/null 2>&1 || { ip link add wg0 type wireguard && wg set wg0 private-key /secrets/operator/wg.key peer "$HUB" endpoint 172.30.0.2:51820 allowed-ips 10.70.0.1/32,10.60.0.20/32 persistent-keepalive 25 && ip addr add 10.70.0.10/24 dev wg0 && ip link set wg0 up && ip route add 10.60.0.20/32 dev wg0; }; sleep 3
+[exit 0]
+
+

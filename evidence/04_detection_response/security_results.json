@@ -1,0 +1,312 @@
+{
+  "started_at": "2026-11-05T16:33:21.437010",
+  "T1_connection_without_certificate_refused": {
+    "pass": true,
+    "detail": "Error: The connection was lost."
+  },
+  "T1_rule_100120_alert": {
+    "pass": true,
+    "detail": "MQTT: device without a valid certificate at ubs (10.10.3.9, peer_did_not_return_a_certificate)"
+  },
+  "T1b_foreign_ca_refused": {
+    "pass": true,
+    "detail": "Error: The connection was lost."
+  },
+  "T2_valid_cert_foreign_topic_denied": {
+    "pass": true,
+    "detail": "q1, r0, m1, 'vilaaurora/ubs/ubs-coldchamber-01/telemetry', ... (5 bytes))\nClient t2-probe received PUBACK (Mid: 1, RC:135)\nClient t2-probe sending DISCONNECT\nWarning: Publish 1 failed: Not authorized."
+  },
+  "T3_valid_device_connects_before_revocation": {
+    "pass": true,
+    "detail": "exit 0"
+  },
+  "T3_revocation_command": {
+    "pass": true,
+    "detail": "revoked ubs-testrevoke-1793907206 serial=1024"
+  },
+  "T3_revoked_device_refused": {
+    "pass": true,
+    "detail": "Error: The connection was lost."
+  },
+  "T3_rule_100120_after_revocation": {
+    "pass": true,
+    "detail": "Nov  5 16:33:32 edge-ubs vilaaurora-edge: site=ubs event=tls_reject srcip=10.10.3.14 detail=certificate_verify_failed"
+  },
+  "T4_unique_serial_per_certificate": {
+    "pass": true,
+    "detail": "37 certificates, 37 serials"
+  },
+  "T5_no_tcp_port_exposed_on_hub": {
+    "pass": true,
+    "detail": "open tcp=[]"
+  },
+  "T5_no_other_udp_service_answers": {
+    "pass": true,
+    "detail": "answering udp=[]; 51820 is silent by WireGuard design"
+  },
+  "T6_all_edge_tunnels_up": {
+    "pass": true,
+    "detail": "5 peers with handshake; cipher fixed by WireGuard"
+  },
+  "T6_no_edge_was_ever_disconnected_by_soar": {
+    "pass": true,
+    "detail": "no automatic kick of any edge"
+  },
+  "T7_panel_unreachable_before_mfa": {
+    "pass": true,
+    "detail": "http_code=000, curl exit 28"
+  },
+  "T7_wrong_second_factor_denied": {
+    "pass": true,
+    "detail": "http_code=401"
+  },
+  "T7_panel_reachable_after_mfa": {
+    "pass": true,
+    "detail": "{\"result\":\"granted\",\"session\":\"8h\"}  panel=200"
+  },
+  "T8_iot_to_database_blocked": {
+    "pass": true,
+    "detail": "nc_db_exit=1 nc_panel_exit=1"
+  },
+  "T8_drop_logged_as_seg_drop": {
+    "pass": true,
+    "detail": "Nov  5 16:35:03 edge-ubs SEG-DROP  IN=eth1 OUT=wg0 MAC=5a:16:8f:5f:7b:ab:8a:ee:2e:87:67:38:08:00 SRC=10.10.3.3 DST=10.60.0.20 LEN=60 TOS=00 PREC=0x00 TTL=63 ID=47356 DF P"
+  },
+  "T9_starts_on_fiber": {
+    "pass": true,
+    "detail": "172.30.0.13:58697"
+  },
+  "T9_tunnel_moved_to_4g": {
+    "pass": true,
+    "detail": {
+      "endpoint": "172.31.0.13:58697",
+      "seconds_after_fiber_cut": 276.2
+    }
+  },
+  "T9_data_flows_over_4g": {
+    "pass": true,
+    "detail": "newest reading received 3.576954 s ago"
+  },
+  "T9_returns_to_fiber": {
+    "pass": true,
+    "detail": {
+      "endpoint": "172.30.0.13:58697",
+      "seconds_after_fiber_restored": 93.9
+    }
+  },
+  "T9_failover_logged": {
+    "pass": true,
+    "detail": [
+      "edge-ubs vilaaurora-edge: site=ubs event=link_failover link=4g handshake_a",
+      "edge-ubs vilaaurora-edge: site=ubs event=link_failover link=fiber handshak",
+      "edge-ubs vilaaurora-edge: site=ubs event=link_failover link=4g handshake_a"
+    ]
+  },
+  "APP_login_without_valid_totp_rejected": {
+    "pass": true,
+    "detail": 401
+  },
+  "APP_operator_login_with_totp": {
+    "pass": true,
+    "detail": 302
+  },
+  "APP_operator_cannot_read_access_history": {
+    "pass": true,
+    "detail": 403
+  },
+  "APP_operator_cannot_send_commands": {
+    "pass": true,
+    "detail": 403
+  },
+  "APP_auditor_reads_history": {
+    "pass": true,
+    "detail": 200
+  },
+  "APP_auditor_sees_only_pseudonyms": {
+    "pass": true,
+    "detail": "no BADGE- identifiers in page"
+  },
+  "APP_auditor_cannot_manage_users": {
+    "pass": true,
+    "detail": 403
+  },
+  "APP_sqli_manual_blocked_by_waf": {
+    "pass": true,
+    "detail": "HTTP 403 expected from WAF"
+  },
+  "APP_sqli_direct_session_is_authenticated": {
+    "pass": true,
+    "detail": 200
+  },
+  "APP_sqli_direct_or_tautology_rejected_400": {
+    "pass": true,
+    "detail": 400
+  },
+  "APP_sqli_direct_or_tautology_generic_message": {
+    "pass": true,
+    "detail": "no DB detail in body"
+  },
+  "APP_sqli_direct_union_rejected_400": {
+    "pass": true,
+    "detail": 400
+  },
+  "APP_sqli_direct_union_generic_message": {
+    "pass": true,
+    "detail": "no DB detail in body"
+  },
+  "APP_sqli_direct_stacked_rejected_400": {
+    "pass": true,
+    "detail": 400
+  },
+  "APP_sqli_direct_stacked_generic_message": {
+    "pass": true,
+    "detail": "no DB detail in body"
+  },
+  "APP_high_impact_enters_queue": {
+    "pass": true,
+    "detail": "queue ids=['1']"
+  },
+  "APP_technician_cannot_approve": {
+    "pass": true,
+    "detail": 403
+  },
+  "APP_self_approval_refused": {
+    "pass": true,
+    "detail": "message shown"
+  },
+  "APP_other_coordinator_approves": {
+    "pass": true,
+    "detail": 200
+  },
+  "APP_post_without_csrf_rejected": {
+    "pass": true,
+    "detail": 400
+  },
+  "APP_audit_trail_has_decisions": {
+    "pass": true,
+    "detail": "audit page lists decisions"
+  },
+  "SQLI_v2_sqlmap_ran_authenticated": {
+    "pass": true,
+    "detail": "baseline_http=200 baseline_auth=1"
+  },
+  "SQLI_v2_sqlmap_finds_nothing": {
+    "pass": true,
+    "detail": "\n400 (Bad Request) - 8919 times\n[19:43:29] [INFO] you can find results of scanning in multiple targets mode inside the CSV file '/tmp/s/results-11052026_0742pm.csv'\n\n[*] ending @ 19:43:29 /2026-11-05/"
+  },
+  "DET_stolen_vpn_key_from_unknown_ip": {
+    "pass": true,
+    "detail": {
+      "scenario": "stolen_vpn_key_from_unknown_ip",
+      "rule": "100101",
+      "detected": true,
+      "mttd_s": 3.91,
+      "mttr_s": 0.97,
+      "action": "done action=kick_peer peer=operator-01 latency_s=0.97"
+    }
+  },
+  "DET_sql_injection_through_tunnel": {
+    "pass": true,
+    "detail": {
+      "scenario": "sql_injection_through_tunnel",
+      "rule": "100110",
+      "detected": true,
+      "mttd_s": 0.47,
+      "mttr_s": 0.97,
+      "action": "done action=block_ip ip=10.70.0.10 latency_s=0.97"
+    }
+  },
+  "DET_source_ip_blocked_after_sqli": {
+    "pass": true,
+    "detail": "http_code=000"
+  },
+  "DET_rogue_device_without_certificate": {
+    "pass": true,
+    "detail": {
+      "scenario": "rogue_device_without_certificate",
+      "rule": "100120",
+      "detected": true,
+      "mttd_s": 2.85,
+      "mttr_s": 1.1,
+      "action": "done action=isolate_device site=escola ip=10.10.2.9 latency_s=1.10"
+    }
+  },
+  "DET_rogue_device_isolated": {
+    "pass": true,
+    "detail": "10.10.2.9 in isolated set"
+  },
+  "DET_pump_command_at_0240": {
+    "pass": true,
+    "detail": {
+      "scenario": "pump_command_at_0240",
+      "rule": "100130",
+      "detected": true,
+      "mttd_s": 1.28,
+      "mttr_s": 1.1,
+      "action": "done action=safe_mode site=escola latency_s=1.10"
+    }
+  },
+  "DET_pump_command_rejected_by_edge": {
+    "pass": true,
+    "detail": "Nov  5 16:44:15 edge-escola vilaaurora-atuador: site=escola atuador=pump action=on user=coordenacao.demo result=rejected reason=out_of_window"
+  },
+  "DET_edge_entered_safe_mode": {
+    "pass": true,
+    "detail": "Nov  5 16:44:17 edge-escola vilaaurora-edge: site=escola event=safe_mode enabled=true by=soar"
+  },
+  "DET_forged_signature_rejected": {
+    "pass": true,
+    "detail": "e=escola atuador=pump action=on user=coordenacao.demo result=rejected reason=bad_signature"
+  },
+  "DET_edge_anomaly_escalated_not_disconnected": {
+    "pass": true,
+    "detail": {
+      "action": "done action=none peer=edge-horta escalated_to_human latency_s=0.96",
+      "peers_before": 6,
+      "peers_after": 6
+    }
+  },
+  "detection_summary": {
+    "scenarios": [
+      {
+        "scenario": "stolen_vpn_key_from_unknown_ip",
+        "rule": "100101",
+        "detected": true,
+        "mttd_s": 3.91,
+        "mttr_s": 0.97,
+        "action": "done action=kick_peer peer=operator-01 latency_s=0.97"
+      },
+      {
+        "scenario": "sql_injection_through_tunnel",
+        "rule": "100110",
+        "detected": true,
+        "mttd_s": 0.47,
+        "mttr_s": 0.97,
+        "action": "done action=block_ip ip=10.70.0.10 latency_s=0.97"
+      },
+      {
+        "scenario": "rogue_device_without_certificate",
+        "rule": "100120",
+        "detected": true,
+        "mttd_s": 2.85,
+        "mttr_s": 1.1,
+        "action": "done action=isolate_device site=escola ip=10.10.2.9 latency_s=1.10"
+      },
+      {
+        "scenario": "pump_command_at_0240",
+        "rule": "100130",
+        "detected": true,
+        "mttd_s": 1.28,
+        "mttr_s": 1.1,
+        "action": "done action=safe_mode site=escola latency_s=1.10"
+      }
+    ],
+    "mttd_mean_s": 2.13,
+    "mttr_mean_s": 1.04
+  },
+  "totals": {
+    "passed": 56,
+    "failed": 0
+  },
+  "finished_at": "2026-11-05T16:44:31.896143"
+}

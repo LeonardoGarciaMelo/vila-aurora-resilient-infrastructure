@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Avisos{% endblock %}
+{% block content %}
+<h2>Avisos</h2>
+{% if not rows %}<p>Nenhum aviso até agora.</p>{% endif %}
+<div class="table-wrap"><table>
+  <caption>Avisos mais recentes</caption>
+  <thead><tr><th scope="col">Quando</th><th scope="col">Espaço</th><th scope="col">O que aconteceu</th><th scope="col">Quem viu</th></tr></thead>
+  <tbody>{% for a in rows %}<tr>
+    <td>{{ a.raised_at.strftime('%d/%m %H:%M') }}</td><td>{{ a.site }}</td><td>{{ a.message }}</td>
+    <td>{% if a.acked_by %}{{ a.acked_by }}{% elif session.role != 'auditor' %}
+      <form method="post" action="{{ url_for('ack_alert', alert_id=a.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Estou ciente</button></form>
+    {% else %}Ninguém ainda{% endif %}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

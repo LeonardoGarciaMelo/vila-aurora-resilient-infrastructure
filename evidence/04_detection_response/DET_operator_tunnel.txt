@@ -1,0 +1,5 @@
+$ docker compose --profile tools exec -T operator-ws sh -c ip link add wg0 type wireguard && wg set wg0 private-key /secrets/operator/wg.key peer RppoJ0lwg9n41Z6Ve/jvsCbX59uXyWleRY1o3+OGbzk= endpoint 172.30.0.2:51820 allowed-ips 10.70.0.1/32,10.60.0.20/32 persistent-keepalive 25 && ip addr add 10.70.0.10/24 dev wg0 && ip link set wg0 up && ip route add 10.60.0.20/32 dev wg0; sleep 2; code=$(python3 -c "import os,pyotp;print(pyotp.TOTP(os.environ['ZTNA_OPERATOR_TOTP']).now())"); curl -s -m 8 -H 'Content-Type: application/json' -d "{\"totp\":\"$code\"}" http://10.70.0.1:8443/login
+[exit 0]
+{"result":"granted","session":"8h"}
+
+

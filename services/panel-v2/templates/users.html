@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Pessoas{% endblock %}
+{% block content %}
+<h2>Pessoas com acesso</h2>
+<div class="table-wrap"><table>
+  <caption>Dados sintéticos do laboratório</caption>
+  <thead><tr><th scope="col">Usuário</th><th scope="col">Nome</th><th scope="col">Perfil</th><th scope="col">Situação</th></tr></thead>
+  <tbody>{% for u in rows %}<tr><td>{{ u.username }}</td><td>{{ u.display_name }}</td><td>{{ role_labels[u.role] }}</td>
+  <td><form method="post" action="{{ url_for('toggle_user', user_id=u.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button>{{ 'Ativo: desativar ' if u.active else 'Inativo: ativar ' }}{{ u.username }}</button></form></td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

@@ -1,0 +1,19 @@
+$ docker run --rm --network vaurora_wan_fiber --ip 172.30.0.67 --cap-add NET_RAW --entrypoint sh vaurora/attacker:1.0 -c nmap -Pn -sU -p 51820,53,123,161,500,1194,4500 172.30.0.2
+[exit 0]
+Starting Nmap 7.93 ( https://nmap.org ) at 2026-11-05 19:34 UTC
+Nmap scan report for vaurora-hub-1.vaurora_wan_fiber (172.30.0.2)
+Host is up (0.00012s latency).
+
+PORT      STATE         SERVICE
+53/udp    open|filtered domain
+123/udp   open|filtered ntp
+161/udp   open|filtered snmp
+500/udp   open|filtered isakmp
+1194/udp  open|filtered openvpn
+4500/udp  open|filtered nat-t-ike
+51820/udp open|filtered unknown
+MAC Address: 5A:B0:95:2F:BE:2D (Unknown)
+
+Nmap done: 1 IP address (1 host up) scanned in 1.36 seconds
+
+

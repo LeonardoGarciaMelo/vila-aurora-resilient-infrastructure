@@ -1,0 +1,10 @@
+$ docker compose exec -T edge-escola nft list set inet filter isolated
+[exit 0]
+table inet filter {
+	set isolated {
+		type ipv4_addr
+		elements = { 10.10.2.9 }
+	}
+}
+
+

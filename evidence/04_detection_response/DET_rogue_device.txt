@@ -1,0 +1,5 @@
+$ docker run --rm --network vaurora_iot_escola --ip 10.10.2.9 -v <repo>/secrets/public:/p:ro --entrypoint sh vaurora/attacker:1.0 -c mosquitto_pub -h 10.10.2.2 -p 8883 --cafile /p/ca-chain.crt --tls-version tlsv1.3 -t x -m y
+[exit 7]
+
+Error: The connection was lost.
+

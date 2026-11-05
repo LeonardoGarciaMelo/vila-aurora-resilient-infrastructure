@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-11-05T18:20:47.773479",
+  "duration_minutes": 37.0,
+  "samples": 35,
+  "per_space": {
+    "centro": {
+      "cpu_percent_of_one_core_mean": 0.29,
+      "cpu_percent_peak": 0.65,
+      "memory_mb_mean": 28.8,
+      "memory_mb_peak": 29.6,
+      "tunnel_kB_per_s": 0.151
+    },
+    "escola": {
+      "cpu_percent_of_one_core_mean": 0.59,
+      "cpu_percent_peak": 6.59,
+      "memory_mb_mean": 30.0,
+      "memory_mb_peak": 37.6,
+      "tunnel_kB_per_s": 0.187
+    },
+    "ubs": {
+      "cpu_percent_of_one_core_mean": 0.25,
+      "cpu_percent_peak": 0.67,
+      "memory_mb_mean": 30.5,
+      "memory_mb_peak": 31.1,
+      "tunnel_kB_per_s": 0.121
+    },
+    "horta": {
+      "cpu_percent_of_one_core_mean": 0.3,
+      "cpu_percent_peak": 0.74,
+      "memory_mb_mean": 28.8,
+      "memory_mb_peak": 29.9,
+      "tunnel_kB_per_s": 0.152
+    },
+    "abrigo": {
+      "cpu_percent_of_one_core_mean": 0.49,
+      "cpu_percent_peak": 1.55,
+      "memory_mb_mean": 30.0,
+      "memory_mb_peak": 31.0,
+      "tunnel_kB_per_s": 0.258
+    }
+  },
+  "availability_percent": {
+    "broker_centro": 100.0,
+    "broker_escola": 100.0,
+    "broker_ubs": 100.0,
+    "broker_horta": 100.0,
+    "broker_abrigo": 100.0,
+    "panel": 100.0
+  },
+  "environment": "containers on one developer workstation, not Raspberry Pi hardware",
+  "energy": "NOT MEASURED: needs a USB-C power meter on real hardware"
+}

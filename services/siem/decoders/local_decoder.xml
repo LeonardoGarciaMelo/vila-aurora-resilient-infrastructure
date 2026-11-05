@@ -1,0 +1,58 @@
+<!-- Vila Aurora decoders: every lab service logs key=value after a standard syslog header. -->
+<decoder name="wireguard-handshake">
+  <program_name>wireguard-handshake</program_name>
+</decoder>
+<decoder name="wireguard-handshake-fields">
+  <parent>wireguard-handshake</parent>
+  <regex>peer=(\S+) srcip=(\S+) after_hours=(\S+) known_ip=(\S+)</regex>
+  <order>peer,srcip,after_hours,known_ip</order>
+</decoder>
+
+<decoder name="vilaaurora-atuador">
+  <program_name>vilaaurora-atuador</program_name>
+</decoder>
+<decoder name="vilaaurora-atuador-fields">
+  <parent>vilaaurora-atuador</parent>
+  <regex>site=(\S+) atuador=(\S+) action=(\S+) user=(\S+) result=(\S+) reason=(\S+)</regex>
+  <order>site,atuador,action,dstuser,result,reason</order>
+</decoder>
+
+<decoder name="vilaaurora-edge">
+  <program_name>vilaaurora-edge</program_name>
+</decoder>
+<decoder name="vilaaurora-edge-tls">
+  <parent>vilaaurora-edge</parent>
+  <regex>site=(\S+) event=tls_reject srcip=(\S+) detail=(\S+)</regex>
+  <order>site,srcip,detail</order>
+</decoder>
+
+<decoder name="vilaaurora-panel">
+  <program_name>vilaaurora-panel</program_name>
+</decoder>
+<decoder name="vilaaurora-panel-fields">
+  <parent>vilaaurora-panel</parent>
+  <regex>user=(\S+) action=(\S+) srcip=(\S+)</regex>
+  <order>dstuser,action,srcip</order>
+</decoder>
+
+<decoder name="vilaaurora-ai">
+  <program_name>vilaaurora-ai</program_name>
+</decoder>
+<decoder name="vilaaurora-ai-fields">
+  <parent>vilaaurora-ai</parent>
+  <regex>event=anomaly site=(\S+) device=(\S+) score=(\S+)</regex>
+  <order>site,device,score</order>
+</decoder>
+
+<decoder name="legacy-panel">
+  <program_name>legacy-panel</program_name>
+</decoder>
+<decoder name="legacy-panel-fields">
+  <parent>legacy-panel</parent>
+  <regex>^(\S+) "\w+ (\S+)" (\d+)</regex>
+  <order>srcip,url,id</order>
+</decoder>
+
+<decoder name="legacy-controller">
+  <program_name>legacy-controller</program_name>
+</decoder>

