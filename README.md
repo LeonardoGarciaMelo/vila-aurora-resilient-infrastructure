@@ -86,6 +86,8 @@ Each command stores its output in `docs/results/`.
 
 The anomaly detector evaluates itself at startup and writes `docs/results/ai_anomaly_metrics.json`.
 
+The phishing data in `docs/results/phishing_results.json` comes from one team member acting on the test accounts, so it does not measure training. `make phishing` overwrites this file with scripted persona results.
+
 `docs/RESULTS.md` summarizes the measured results and states what was not measured.
 
 ## Repository layout
