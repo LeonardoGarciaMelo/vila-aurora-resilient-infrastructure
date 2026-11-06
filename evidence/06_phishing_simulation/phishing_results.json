@@ -1,27 +1,38 @@
 {
-  "generated_at": "2026-11-05T16:45:08.075001",
-  "behaviour_source": "SCRIPTED PERSONAS with fixed probabilities: validates the pipeline, these are not human results",
+  "generated_at": "2026-11-06T12:03:40.203663",
+  "behaviour_source": "Single team member acting on all test accounts, with consent",
   "credentials_stored": false,
   "targets": "fictitious accounts created by the team",
   "campaigns": [
     {
-      "name": "before_training",
+      "name": "antes_treinamento",
       "accounts": 20,
-      "open_rate": 90.0,
-      "click_rate": 80.0,
-      "submit_rate": 30.0,
-      "report_rate": 5.0,
-      "seconds_to_first_report": 2.3
+      "open_rate": 75.0,
+      "click_rate": 55.0,
+      "submit_rate": 20.0,
+      "report_rate": 15.0,
+      "seconds_to_first_report": 328.2
     },
     {
-      "name": "after_training",
+      "name": "depois_treinamento_2",
       "accounts": 20,
-      "open_rate": 80.0,
-      "click_rate": 15.0,
-      "submit_rate": 5.0,
-      "report_rate": 55.0,
-      "seconds_to_first_report": 2.2
+      "open_rate": 100.0,
+      "click_rate": 0.0,
+      "submit_rate": 0.0,
+      "report_rate": 85.0,
+      "seconds_to_first_report": 10.6
     }
   ],
-  "submitted_values_recorded_by_gophish": true
+  "excluded_campaigns": [
+    {
+      "name": "depois_treinamento",
+      "accounts": 20,
+      "open_rate": 5.0,
+      "click_rate": 0.0,
+      "submit_rate": 0.0,
+      "report_rate": 0.0,
+      "seconds_to_first_report": null
+    }
+  ],
+  "submitted_values_recorded_by_gophish": false
 }

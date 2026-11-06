@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T16:27:46.018173",
+  "generated_at": "2026-11-06T12:15:25.587295",
   "model": "IsolationForest",
   "features": [
     "level_delta",

@@ -12,6 +12,6 @@ runner=(docker compose --profile phishing exec -T phishing-runner python3 /phish
 case "${1:-}" in
   --personas) "${runner[@]}" --personas ;;
   --manual) "${runner[@]}" --manual "${2:?campaign name}" ;;
-  --export) "${runner[@]}" --export "${2:?behaviour source}" ;;
+  --export) "${runner[@]}" --export "${2:?behaviour source}" ${3:+--exclude "$3"} ;;
   *) echo "usage: $0 --personas | --manual <name> | --export <behaviour source>"; exit 2 ;;
 esac

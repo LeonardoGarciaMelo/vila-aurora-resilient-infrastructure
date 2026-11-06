@@ -30,7 +30,8 @@ TEMPLATE_HTML = """<html><body>
 <p>Prezada equipe,</p>
 <p>Por determinacao da Prefeitura de Serra Clara, o acesso ao painel da Rede Vila Aurora deve ser atualizado hoje.</p>
 <p><a href="{{.URL}}">Atualizar acesso</a></p>
-<p>Secretaria Municipal (FICTICIA) - simulacao de laboratorio</p>{{.Tracker}}
+<p>Secretaria Municipal (FICTICIA) - simulacao de laboratorio</p>
+<hr><p><a href="{{.BaseURL}}/report?rid={{.RId}}" target="_blank">Reportar suspeita</a></p>{{.Tracker}}
 </body></html>"""
 LANDING_HTML = """<html><body><h1>Atualizacao de acesso</h1>
 <form method="post"><label>Usuario <input name="u"></label><label>Senha <input name="p" type="password"></label><button>Enviar</button></form>
@@ -112,10 +113,13 @@ def summarise(campaign: dict) -> dict:
     }
 
 
-def export(api: Gophish, behaviour: str) -> None:
-    campaigns = [api.get(f"/campaigns/{c['id']}") for c in api.get("/campaigns/")]
+def export(api: Gophish, behaviour: str, excluded: list[str]) -> None:
+    all_campaigns = [api.get(f"/campaigns/{c['id']}") for c in api.get("/campaigns/")]
+    campaigns = [c for c in all_campaigns if c["name"] not in excluded]
     payload = {"generated_at": datetime.now().isoformat(), "behaviour_source": behaviour, "credentials_stored": False,
-               "targets": "fictitious accounts created by the team", "campaigns": [summarise(c) for c in campaigns]}
+               "targets": "fictitious accounts created by the team", "campaigns": [summarise(c) for c in campaigns],
+               # Discarded rounds stay visible, so the choice of what to report can be audited.
+               "excluded_campaigns": [summarise(c) for c in all_campaigns if c["name"] in excluded]}
     stored = any(e.get("details") and '"payload"' in e["details"] and "placeholder" in e["details"] for c in campaigns for e in c["timeline"])
     payload["submitted_values_recorded_by_gophish"] = stored
     RESULTS.write_text(json.dumps(payload, indent=2, ensure_ascii=False))
@@ -128,6 +132,7 @@ def main() -> None:
     parser.add_argument("--manual", metavar="NAME")
     parser.add_argument("--personas", action="store_true")
     parser.add_argument("--export", metavar="BEHAVIOUR_SOURCE")
+    parser.add_argument("--exclude", action="append", default=[], metavar="CAMPAIGN")
     args = parser.parse_args()
     api = Gophish(args.key)
     if args.manual:
@@ -140,9 +145,9 @@ def main() -> None:
             wait_for_delivery(ACCOUNTS)
             play_personas(label, 712 + offset)
             time.sleep(5)
-        export(api, "SCRIPTED PERSONAS with fixed probabilities: validates the pipeline, these are not human results")
+        export(api, "SCRIPTED PERSONAS with fixed probabilities: validates the pipeline, these are not human results", [])
     if args.export:
-        export(api, args.export)
+        export(api, args.export, args.exclude)
     sys.exit(0)
 
 

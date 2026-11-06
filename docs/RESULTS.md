@@ -58,7 +58,7 @@ Tank went from 80.0% to 0.0%, and 40 synthetic records were extracted. All 8 evi
 ## Not measured or not done
 
 - **Energy of the edge:** needs hardware and a power meter. The report gives an estimate.
-- **Human phishing behaviour:** the campaign metrics come from scripted personas with fixed probabilities. They validate the pipeline and are not findings.
+- **Training effect:** one team member acted on all test accounts, knowing the simulation. Round 1: 75.0% opened, 55.0% clicked, 20.0% submitted, 15.0% reported. Round 2, with a report link added to the e-mail: 100.0% opened, 0.0% clicked, 0.0% submitted, 85.0% reported. These figures do not measure training.
 - **Full RAM forensics (Volatility 3):** only one process's memory was captured, to avoid imaging the host.
 - **plaso and garak:** not run. A project script builds the timeline, and the prompt injection attacks were written by hand.
 - **Synthetic voice sample:** needs a team member's written consent.
